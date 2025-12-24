@@ -84,9 +84,10 @@ app.get("/product/:productId", async function (req, res) {
 app.get("/products", async function (req, res) {
   try {
     const result = await db.query(
-      `SELECT p.id as _id, p.product_name as name, p.price, 
+      `SELECT p.id as _id, p.product_name as name, p.price, p.cost_price,
       COALESCE(c.id, 0) as category, p.quantity, p.product_specifications as stock, 
-      p.image_link as img, p.zone, p.district, p.institute_name, p.institute_id 
+      p.image, p.image_link, p.image_link as img, 
+      p.zone, p.district, p.institute_name, p.institute_id 
       FROM products p 
       LEFT JOIN categories c ON c.name = p.product_category 
       ORDER BY p.id`
@@ -133,31 +134,41 @@ app.post("/product", upload.single("imagename"), async function (req, res) {
     if (req.body.id == "") {
       // Insert new product
       const result = await db.query(
-        `INSERT INTO products (product_name, price, product_category, quantity, product_specifications, image_link, institute_id) 
-                VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id as _id, product_name as name, price, product_category as category, quantity, product_specifications as stock, image_link as img`,
+        `INSERT INTO products (product_name, price, cost_price, product_category, quantity, product_specifications, image, image_link, institute_id, zone, district, institute_name) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id as _id, product_name as name, price, product_category as category, quantity, product_specifications as stock, image, image_link as img`,
         [
           req.body.name,
           req.body.price,
+          req.body.cost_price || 0,
           categoryName,
           req.body.quantity == "" ? 0 : req.body.quantity,
           req.body.stock == "on" ? 0 : 1,
-          image,
+          req.file ? req.file.filename : "",
+          req.body.image_link || "",
           req.body.institute_id ? parseInt(req.body.institute_id) : null,
+          req.body.zone || "",
+          req.body.district || "",
+          req.body.institute_name || "",
         ]
       );
       res.send(result.rows[0]);
     } else {
       // Update existing product
       await db.query(
-        `UPDATE products SET product_name = $1, price = $2, product_category = $3, quantity = $4, product_specifications = $5, image_link = $6, institute_id = $7, updated_at = CURRENT_TIMESTAMP WHERE id = $8`,
+        `UPDATE products SET product_name = $1, price = $2, cost_price = $3, product_category = $4, quantity = $5, product_specifications = $6, image = $7, image_link = $8, institute_id = $9, zone = $10, district = $11, institute_name = $12, updated_at = CURRENT_TIMESTAMP WHERE id = $13`,
         [
           req.body.name,
           req.body.price,
+          req.body.cost_price || 0,
           categoryName,
           req.body.quantity == "" ? 0 : req.body.quantity,
           req.body.stock == "on" ? 0 : 1,
-          image,
+          req.file ? req.file.filename : req.body.image || "",
+          req.body.image_link || "",
           req.body.institute_id ? parseInt(req.body.institute_id) : null,
+          req.body.zone || "",
+          req.body.district || "",
+          req.body.institute_name || "",
           parseInt(req.body.id),
         ]
       );

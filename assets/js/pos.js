@@ -386,16 +386,25 @@ $(document).ready(function () {
           // Handle missing SKU field
           const skuDisplay = item.sku || item._id || "";
 
+          // Determine image source
+          let imgSrc = "./assets/images/default.jpg";
+          if (item.image) {
+            // Use uploaded image from server
+            imgSrc = "http://localhost:8001/uploads/" + item.image;
+          } else if (item.image_link && item.image_link !== "") {
+            // Use external link if provided
+            imgSrc = item.image_link;
+          } else if (item.img && item.img !== "") {
+            // Fallback to old img field
+            imgSrc = img_path + item.img;
+          }
+
           let item_info = `<div class="col-lg-2 box ${item.category}"
                                 onclick="$(this).addToCart(${item._id}, ${
             item.quantity
           }, ${item.stock})">
                             <div class="widget-panel widget-style-2 ">                    
-                            <div id="image"><img src="${
-                              item.img == ""
-                                ? "./assets/images/default.jpg"
-                                : img_path + item.img
-                            }" id="product_img" alt=""></div>                    
+                            <div id="image"><img src="${imgSrc}" id="product_img" alt="" onerror="this.src='./assets/images/default.jpg'"></div>                    
                                         <div class="text-muted m-t-5 text-center">
                                         <div class="name" id="product_name">${
                                           item.name

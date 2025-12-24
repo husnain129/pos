@@ -1,4 +1,6 @@
 require("dotenv").config();
+const path = require("path");
+const fs = require("fs");
 let express = require("express"),
   http = require("http"),
   app = require("express")(),
@@ -8,6 +10,41 @@ let express = require("express"),
 const PORT = process.env.PORT || 8001;
 
 console.log("Server started");
+
+// Get upload directory based on platform
+function getUploadDir() {
+  const isDev = process.env.NODE_ENV === "dev";
+
+  if (isDev) {
+    return path.join(__dirname, "public", "uploads");
+  }
+
+  if (process.platform === "darwin") {
+    return path.join(
+      process.env.HOME,
+      "Library",
+      "Application Support",
+      "Creative Hands POS",
+      "uploads"
+    );
+  } else if (process.platform === "win32") {
+    return path.join(process.env.APPDATA, "Creative Hands POS", "uploads");
+  } else {
+    return path.join(process.env.HOME, ".creative-hands-pos", "uploads");
+  }
+}
+
+const uploadDir = getUploadDir();
+
+// Create upload directory if it doesn't exist
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Serve static files from uploads directory
+app.use("/uploads", express.static(uploadDir));
+console.log("Serving uploads from:", uploadDir);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
