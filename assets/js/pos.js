@@ -316,22 +316,10 @@ $(document).ready(function () {
       $("#price_curr, #payment_curr, #change_curr").text(settings.symbol);
     }
 
-    setTimeout(function () {
-      if (settings == undefined && auth != undefined) {
-        $("#settingsModal").modal("show");
-      } else if (settings && settings.percentage) {
-        vat = parseFloat(settings.percentage);
-        $("#taxInfo").text(settings.charge_tax ? vat : 0);
-      }
-    }, 1500);
-
-    $("#settingsModal").on("hide.bs.modal", function () {
-      setTimeout(function () {
-        if (settings == undefined && auth != undefined) {
-          $("#settingsModal").modal("show");
-        }
-      }, 1000);
-    });
+    if (settings && settings.percentage) {
+      vat = parseFloat(settings.percentage);
+      $("#taxInfo").text(settings.charge_tax ? vat : 0);
+    }
 
     if (0 == user.perm_products) {
       $(".p_one").hide();

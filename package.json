@@ -17,7 +17,6 @@
     "body-parser": "^1.18.2",
     "btoa": "^1.2.1",
     "dotenv": "^17.2.3",
-    "electron": ">=22.3.25",
     "electron-context-menu": "^0.15.1",
     "electron-store": "^5.1.0",
     "electron-winstaller": "^4.0.0",
@@ -43,9 +42,12 @@
     "xmlhttprequest": "^1.8.0"
   },
   "scripts": {
-    "electron": "cross-env NODE_ENV=dev nodemon --exec \"\"electron .\"\"",
-    "electron-build": "electron-builder",
-    "package-win": "electron-packager . POS --overwrite --asar=false --platform=win32 --arch=x64 --icon=assets/images/icon.ico --prune=true --out=release-builds --version-string.ProductName=\"POS\""
+    "start": "electron .",
+    "dev": "cross-env NODE_ENV=dev nodemon --exec \"\"electron .\"\" ",
+    "build": "npm run build:mac && npm run build:win && npm run build:linux",
+    "build:mac": "electron-packager . \"Creative Hands POS\" --overwrite --asar=false --platform=darwin --arch=x64 --icon=assets/images/icon.icns --prune=true --out=release-builds --app-version=1.0.0",
+    "build:win": "electron-packager . \"Creative Hands POS\" --overwrite --asar=false --platform=win32 --arch=x64 --icon=assets/images/icon.ico --prune=true --out=release-builds --app-version=1.0.0 --win32metadata.CompanyName=\"Creative Hands By TEVTA\" --win32metadata.FileDescription=\"Point of Sale System\" --win32metadata.ProductName=\"Creative Hands POS\"",
+    "build:linux": "electron-packager . \"Creative Hands POS\" --overwrite --asar=false --platform=linux --arch=x64 --prune=true --out=release-builds --app-version=1.0.0"
   },
   "browserslist": {
     "production": [
@@ -61,8 +63,10 @@
   },
   "devDependencies": {
     "cross-env": "^6.0.3",
+    "electron": "^22.3.25",
     "electron-builder": "^21.2.0",
     "electron-is-dev": "^1.1.0",
+    "electron-packager": "^17.1.2",
     "nodemon": "^1.19.3"
   }
 }

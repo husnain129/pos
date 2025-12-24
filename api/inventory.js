@@ -6,9 +6,45 @@ const async = require("async");
 const fileUpload = require("express-fileupload");
 const multer = require("multer");
 const fs = require("fs");
+const path = require("path");
+
+// Get appropriate data directory based on platform
+function getDataDir() {
+  const isDev = process.env.NODE_ENV === "dev";
+
+  if (isDev) {
+    // Development mode - use project directory
+    return path.join(__dirname, "..", "public", "uploads");
+  }
+
+  // Production mode - use user data directory
+  if (process.platform === "darwin") {
+    // macOS
+    return path.join(
+      process.env.HOME,
+      "Library",
+      "Application Support",
+      "Creative Hands POS",
+      "uploads"
+    );
+  } else if (process.platform === "win32") {
+    // Windows
+    return path.join(process.env.APPDATA, "Creative Hands POS", "uploads");
+  } else {
+    // Linux
+    return path.join(process.env.HOME, ".creative-hands-pos", "uploads");
+  }
+}
+
+const uploadDir = getDataDir();
+
+// Create directory if it doesn't exist
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
-  destination: process.env.APPDATA + "/POS/uploads",
+  destination: uploadDir,
   filename: function (req, file, callback) {
     callback(null, Date.now() + ".jpg"); //
   },
