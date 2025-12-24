@@ -42,8 +42,8 @@ function getDbConfigPath() {
       host: "localhost",
       port: 5432,
       database: "pos",
-      user: "muhammadh.",
-      password: "",
+      user: "postgres",
+      password: "admin",
     };
     fs.writeFileSync(configFile, JSON.stringify(defaultConfig, null, 2));
     console.log("Created default database config at:", configFile);
@@ -56,24 +56,18 @@ function getDbConfigPath() {
 let dbConfig;
 const configPath = getDbConfigPath();
 
-if (configPath && fs.existsSync(configPath)) {
   // Production - load from config file
   const configData = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  dbConfig = {
-    host: configData.host,
-    port: configData.port,
-    database: configData.database,
-    user: configData.user,
-    password: configData.password,
-  };
+  dbConfig =  {
+      host: "localhost",
+      port: 5432,
+      database: "pos",
+      user: "postgres",
+      password: "admin",
+    };
   console.log("Using database config from:", configPath);
-} else {
-  // Development - use DATABASE_URL from .env
-  dbConfig = {
-    connectionString: process.env.DATABASE_URL,
-  };
+
   console.log("Using DATABASE_URL from .env");
-}
 
 const pool = new Pool(dbConfig);
 
