@@ -1,6 +1,6 @@
 -- Reset and Import Data Script
 -- This will delete ALL data from the database including transactions
--- WARNING: This will remove all transaction history and reset everything except users
+-- WARNING: This will remove all transaction history and reset everything
 
 BEGIN;
 
@@ -10,6 +10,8 @@ DELETE FROM products;
 DELETE FROM categories;
 DELETE FROM institutes;
 DELETE FROM customers;
+DELETE FROM settings WHERE id = 1;
+DELETE FROM users;
 
 -- Reset sequences
 ALTER SEQUENCE transactions_id_seq RESTART WITH 1;
@@ -17,6 +19,15 @@ ALTER SEQUENCE institutes_id_seq RESTART WITH 1;
 ALTER SEQUENCE categories_id_seq RESTART WITH 1;
 ALTER SEQUENCE products_id_seq RESTART WITH 1;
 ALTER SEQUENCE customers_id_seq RESTART WITH 1;
+ALTER SEQUENCE users_id_seq RESTART WITH 1;
+
+-- Insert default admin user
+INSERT INTO users (username, password, name, fullname, email, role, status, perm_products, perm_categories, perm_transactions, perm_users, perm_settings)
+VALUES ('admin', 'admin', 'Administrator', 'System Administrator', 'admin@creativehands.com', 'admin', 'active', 1, 1, 1, 1, 1);
+
+-- Insert default settings
+INSERT INTO settings (id, store_name, currency, tax_rate, symbol, charge_tax) 
+VALUES (1, 'Creative Hands By TEVTA', 'PKR', 0.00, 'Rs', false);
 
 -- Insert Institutes
 INSERT INTO institutes (name, district, zone) VALUES
