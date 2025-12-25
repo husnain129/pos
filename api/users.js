@@ -100,7 +100,7 @@ app.post("/post", async function (req, res) {
       const result = await db.query(
         `INSERT INTO users (username, password, fullname, perm_products, perm_categories, perm_transactions, perm_users, perm_settings, status, role) 
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
-                RETURNING id as _id, username, fullname, perm_products, perm_categories, perm_transactions, perm_users, perm_settings, status`,
+                RETURNING id as _id, username, fullname, perm_products, perm_categories, perm_transactions, perm_users, perm_settings, status, role`,
         [
           req.body.username,
           btoa(req.body.password),
@@ -111,7 +111,7 @@ app.post("/post", async function (req, res) {
           req.body.perm_users == "on" ? 1 : 0,
           req.body.perm_settings == "on" ? 1 : 0,
           "",
-          "user",
+          req.body.role || "cashier",
         ]
       );
       res.send(result.rows[0]);

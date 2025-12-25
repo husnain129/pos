@@ -143,6 +143,9 @@ $.fn.serializeObject = function () {
 // (moved to avoid "Cannot read properties of undefined" error)
 
 $(document).ready(function () {
+  // Initialize Bootstrap tooltips
+  $('[data-bs-toggle="tooltip"]').tooltip();
+
   // Initialize Electron app and paths when document is ready
   // Try multiple ways to get the app object since contextIsolation is false
   try {
@@ -335,6 +338,18 @@ $(document).ready(function () {
     }
     if (0 == user.perm_settings) {
       $(".p_five").hide();
+    }
+
+    // Role-based restrictions for cashiers
+    if (user.role === "cashier" || user.role === "user") {
+      // Hide add buttons for products, categories, and institutes
+      $("#newProductModal").hide();
+      $("#newCategoryModal").hide();
+      $("#newInstituteModal").hide();
+      $(".p_six").hide(); // Hide institutes completely for cashiers
+
+      // Disable edit/delete functionality in modals
+      $("body").addClass("cashier-mode");
     }
 
     function loadProducts() {
@@ -553,6 +568,15 @@ $(document).ready(function () {
     }
 
     $.fn.editInstitute = function (index) {
+      // Prevent cashiers from editing institutes
+      if (user.role === "cashier" || user.role === "user") {
+        Swal.fire(
+          "Access Denied",
+          "Cashiers cannot edit institutes",
+          "warning"
+        );
+        return;
+      }
       $("#Institutes").modal("hide");
       $("#instituteName").val(allInstitutes[index].name);
       $("#instituteDistrict").val(allInstitutes[index].district);
@@ -562,6 +586,15 @@ $(document).ready(function () {
     };
 
     $.fn.deleteInstitute = function (id) {
+      // Prevent cashiers from deleting institutes
+      if (user.role === "cashier" || user.role === "user") {
+        Swal.fire(
+          "Access Denied",
+          "Cashiers cannot delete institutes",
+          "warning"
+        );
+        return;
+      }
       Swal.fire({
         title: "Are you sure?",
         text: "You are about to delete this institute.",
@@ -1996,6 +2029,11 @@ $(document).ready(function () {
     });
 
     $.fn.editProduct = function (index) {
+      // Prevent cashiers from editing products
+      if (user.role === "cashier" || user.role === "user") {
+        Swal.fire("Access Denied", "Cashiers cannot edit products", "warning");
+        return;
+      }
       $("#Products").modal("hide");
 
       // Populate institute dropdown
@@ -2059,6 +2097,7 @@ $(document).ready(function () {
       $("#fullname").val(allUsers[index].fullname);
       $("#username").val(allUsers[index].username);
       $("#password").val(atob(allUsers[index].password));
+      $("#userRole").val(allUsers[index].role || "cashier");
 
       if (allUsers[index].perm_products == 1) {
         $("#perm_products").prop("checked", true);
@@ -2094,6 +2133,15 @@ $(document).ready(function () {
     };
 
     $.fn.editCategory = function (index) {
+      // Prevent cashiers from editing categories
+      if (user.role === "cashier" || user.role === "user") {
+        Swal.fire(
+          "Access Denied",
+          "Cashiers cannot edit categories",
+          "warning"
+        );
+        return;
+      }
       $("#Categories").modal("hide");
       $("#categoryName").val(allCategories[index].name);
       $("#category_id").val(allCategories[index]._id);
@@ -2107,6 +2155,15 @@ $(document).ready(function () {
     };
 
     $.fn.deleteProduct = function (id) {
+      // Prevent cashiers from deleting products
+      if (user.role === "cashier" || user.role === "user") {
+        Swal.fire(
+          "Access Denied",
+          "Cashiers cannot delete products",
+          "warning"
+        );
+        return;
+      }
       Swal.fire({
         title: "Are you sure?",
         text: "You are about to delete this product.",
@@ -2155,6 +2212,15 @@ $(document).ready(function () {
     };
 
     $.fn.deleteCategory = function (id) {
+      // Prevent cashiers from deleting categories
+      if (user.role === "cashier" || user.role === "user") {
+        Swal.fire(
+          "Access Denied",
+          "Cashiers cannot delete categories",
+          "warning"
+        );
+        return;
+      }
       Swal.fire({
         title: "Are you sure?",
         text: "You are about to delete this category.",
@@ -2536,14 +2602,21 @@ $(document).ready(function () {
       $("#fullname").val(user.fullname);
       $("#username").val(user.username);
       $("#password").val(atob(user.password));
+      $("#userRole").val(user.role || "cashier");
+      $(".role-selection").hide(); // Hide role selection for self-edit
+      $(".perms").hide(); // Hide permissions for self-edit
     });
 
     $("#add-user").click(function () {
-      if (platform.app != "Network Point of Sale Terminal") {
+      if (platform && platform.app != "Network Point of Sale Terminal") {
         $(".perms").show();
+      } else if (!platform) {
+        $(".perms").show(); // Show perms by default if platform not set
       }
 
       $("#saveUser").get(0).reset();
+      $("#userRole").val("cashier"); // Default to cashier
+      $(".role-selection").show();
       $("#userModal").modal("show");
     });
 
@@ -3087,7 +3160,11 @@ $("body").on("submit", "#account", function (e) {
       processData: false,
       success: function (data) {
         if (data._id) {
-          storage.set("auth", { auth: true });
+          storage.set("auth", {
+            auth: true,
+            role: data.role || "user",
+            username: data.username,
+          });
           storage.set("user", data);
           ipcRenderer.send("app-reload", "");
         } else {

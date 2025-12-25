@@ -179,10 +179,6 @@
   display: none;
 }
 
-#quit {
-  z-index: 9999;
-}
-
 #rmv_logo,
 #rmv_img {
   display: none;

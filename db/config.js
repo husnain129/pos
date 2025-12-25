@@ -56,18 +56,22 @@ function getDbConfigPath() {
 let dbConfig;
 const configPath = getDbConfigPath();
 
+if (configPath) {
   // Production - load from config file
   const configData = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  dbConfig =  {
-      host: "localhost",
-      port: 5432,
-      database: "pos",
-      user: "postgres",
-      password: "admin",
-    };
+  dbConfig = configData;
   console.log("Using database config from:", configPath);
-
-  console.log("Using DATABASE_URL from .env");
+} else {
+  // Development - use environment variables or defaults
+  dbConfig = {
+    host: process.env.DB_HOST || "localhost",
+    port: process.env.DB_PORT || 5432,
+    database: process.env.DB_NAME || "pos",
+    user: process.env.DB_USER || "muhammadh.",
+    password: process.env.DB_PASSWORD || "",
+  };
+  console.log("Using database config from .env");
+}
 
 const pool = new Pool(dbConfig);
 
