@@ -26,9 +26,11 @@
 
 #parent {
   display: block;
-  height: calc(100vh - 215px);
-  overflow: auto;
-  overflow: hidden;
+  /* leave some room for header/footer and controls above */
+  height: calc(100vh - 220px);
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .order-box {
@@ -49,6 +51,7 @@
   height: 80px;
   object-fit: cover;
   border-radius: 4px;
+  margin-top: 5px;
 }
 
 #reportrange {
@@ -205,6 +208,29 @@
   border: 1px solid #ddd;
   border-radius: 5px;
   overflow-y: scroll;
+}
+
+/* Fixed header/footer helpers */
+#site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+}
+body {
+  /* adjust to header height (approx 90px) and potential footer */
+  padding-top: 90px;
+}
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1050;
+}
+body {
+  padding-bottom: 60px;
 }
 
 #total_sales {
