@@ -56,46 +56,18 @@ function getDbConfigPath() {
 let dbConfig;
 const configPath = getDbConfigPath();
 
-// If configPath is provided (production), read file; otherwise use env or DATABASE_URL
-if (configPath) {
-  try {
-    const configData = JSON.parse(fs.readFileSync(configPath, "utf8"));
-    dbConfig = configData;
-    console.log("Using database config from:", configPath);
-  } catch (err) {
-    console.error("Failed to read database config file:", err);
-    // fall back to environment variables if available
-    if (process.env.DATABASE_URL) {
-      dbConfig = { connectionString: process.env.DATABASE_URL };
-      console.log("Falling back to DATABASE_URL from environment");
-    } else {
-      // final fallback to defaults
-      dbConfig = {
-        host: process.env.DB_HOST || "localhost",
-        port: Number(process.env.DB_PORT) || 5432,
-        database: process.env.DB_NAME || "pos",
-        user: process.env.DB_USER || "postgres",
-        password: process.env.DB_PASSWORD || "admin",
-      };
-      console.log("Using default DB settings after failed config file read");
-    }
-  }
-} else {
-  // Development: prefer DATABASE_URL, then env vars, then defaults
-  if (process.env.DATABASE_URL) {
-    dbConfig = { connectionString: process.env.DATABASE_URL };
-    console.log("Using DATABASE_URL from .env");
-  } else {
-    dbConfig = {
-      host: process.env.DB_HOST || "localhost",
-      port: Number(process.env.DB_PORT) || 5432,
-      database: process.env.DB_NAME || "pos",
-      user: process.env.DB_USER || "postgres",
-      password: process.env.DB_PASSWORD || "admin",
+  // Production - load from config file
+  const configData = JSON.parse(fs.readFileSync(configPath, "utf8"));
+  dbConfig =  {
+      host: "localhost",
+      port: 5432,
+      database: "pos",
+      user: "postgres",
+      password: "admin",
     };
-    console.log("Using DB settings from env or defaults");
-  }
-}
+  console.log("Using database config from:", configPath);
+
+  console.log("Using DATABASE_URL from .env");
 
 const pool = new Pool(dbConfig);
 
