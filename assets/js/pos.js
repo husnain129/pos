@@ -3117,28 +3117,25 @@ $("#reportrange").on("apply.daterangepicker", function (ev, picker) {
 function authenticate() {
   $("#loading").append(
     `<div id="load">
-      <!-- Login Header -->
-      <div style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); padding: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 40px; text-align: center;">
-        <img src="assets/images/logo.jpeg" alt="Creative Hands Logo" style="height: 80px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
-        <h2 style="margin: 0; color: white; font-size: 32px; font-weight: 700; letter-spacing: 1px;">Creative Hands</h2>
-        <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.8); font-size: 16px; font-weight: 500;">By TEVTA - Point of Sale System</p>
+      <div class="login-body">
+        <!-- Login Header -->
+        <div class="login-header">
+          <img src="assets/images/logo.jpeg" alt="Creative Hands Logo" class="login-logo">
+          <h2>Creative Hands</h2>
+          <p>By TEVTA - Point of Sale System</p>
+        </div>
+
+        <form id="account" class="login-form">
+          <h3>Login to Continue</h3>
+          <div class="form-group"><input type="text" placeholder="Username" name="username" class="form-control"></div>
+          <div class="form-group"><input type="password" placeholder="Password" name="password" class="form-control"></div>
+          <div class="form-group"><input type="submit" class="btn btn-block btn-default" value="Login"></div>
+        </form>
       </div>
-      
-      <form id="account" style="max-width: 400px; margin: 0 auto; padding: 30px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-        <h3 style="text-align: center; margin-bottom: 25px; color: #2c3e50; font-weight: 600;">Login to Continue</h3>
-        <div class="form-group"><input type="text" placeholder="Username" name="username" class="form-control" style="padding: 12px; font-size: 15px;"></div>
-        <div class="form-group"><input type="password" placeholder="Password" name="password" class="form-control" style="padding: 12px; font-size: 15px;"></div>
-        <div class="form-group"><input type="submit" class="btn btn-block btn-default" value="Login" style="padding: 12px; font-size: 16px; font-weight: 600; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; border: none;"></div>
-      </form>
-      
-      <!-- Login Footer -->
-      <div style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); padding: 20px 0; margin-top: 40px; box-shadow: 0 -2px 8px rgba(0,0,0,0.1); text-align: center; position: fixed; bottom: 0; left: 0; right: 0;">
-        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 500;">
-          Created by <strong>Mr. Zahid Ghaffar</strong> - Chief Instructor IT
-        </p>
-        <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.7); font-size: 12px;">
-          Creative Hands By TEVTA © 2025
-        </p>
+
+      <div class="login-footer">
+        <p>Created by <strong>Mr. Zahid Ghaffar</strong> - Chief Instructor IT</p>
+        <p>Creative Hands By TEVTA © 2025</p>
       </div>
     </div>`
   );
