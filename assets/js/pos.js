@@ -2719,6 +2719,40 @@ $.fn.print = function () {
   printJS({ printable: receipt, type: "raw-html" });
 };
 
+// Print invoice modal content
+$("#printInvoiceBtn").click(function () {
+  var printContent = document.getElementById("viewTransaction").innerHTML;
+  var originalContent = document.body.innerHTML;
+
+  // Create a temporary div with print-friendly styling
+  var printWindow = window.open("", "_blank");
+  printWindow.document.write("<html><head><title>Print Invoice</title>");
+  printWindow.document.write("<style>");
+  printWindow.document.write(
+    "body { font-family: Arial, sans-serif; margin: 20px; }"
+  );
+  printWindow.document.write(
+    "table { width: 100%; border-collapse: collapse; margin: 10px 0; }"
+  );
+  printWindow.document.write(
+    "table, th, td { border: 1px solid #ddd; padding: 8px; }"
+  );
+  printWindow.document.write(
+    "th { background-color: #f2f2f2; text-align: left; }"
+  );
+  printWindow.document.write("@media print { body { margin: 0; } }");
+  printWindow.document.write("</style></head><body>");
+  printWindow.document.write(printContent);
+  printWindow.document.write("</body></html>");
+  printWindow.document.close();
+
+  // Wait for content to load then print
+  setTimeout(function () {
+    printWindow.print();
+    printWindow.close();
+  }, 250);
+});
+
 function loadTransactions() {
   let tills = [];
   let users = [];
