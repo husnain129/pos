@@ -1,3 +1,13 @@
+/* Tooltip override - must be above header */
+.tooltip,
+.tooltip.in,
+.tooltip.top,
+.tooltip.bottom,
+.tooltip.left,
+.tooltip.right {
+  z-index: 999999 !important;
+}
+
 #transactions_view {
   display: none;
   flex: 1;
@@ -11,15 +21,14 @@
 
 body,
 html {
-  overflow: hidden !important;
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
 .main_app {
-  height: 100vh;
-  overflow: hidden;
+  min-height: calc(100vh - 60px);
+  padding-bottom: 60px;
   display: flex;
   flex-direction: column;
 }
@@ -68,7 +77,7 @@ html {
 
 #cartTable tbody {
   display: block;
-  height: calc(100vh - 520px);
+  max-height: 300px;
   overflow-y: auto;
   width: 100%;
 }
@@ -464,7 +473,7 @@ html {
 body {
   /* adjust to header height (approx 90px) and potential footer */
   padding-top: 90px;
-  padding-bottom: 60px;
+  padding-bottom: 0;
 }
 .footer {
   position: fixed;

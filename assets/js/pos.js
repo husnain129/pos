@@ -143,8 +143,10 @@ $.fn.serializeObject = function () {
 // (moved to avoid "Cannot read properties of undefined" error)
 
 $(document).ready(function () {
-  // Initialize Bootstrap tooltips
-  $('[data-bs-toggle="tooltip"]').tooltip();
+  // Initialize Bootstrap tooltips with body container to ensure proper z-index
+  $('[data-bs-toggle="tooltip"]').tooltip({
+    container: "body",
+  });
 
   // Initialize Electron app and paths when document is ready
   // Try multiple ways to get the app object since contextIsolation is false
@@ -1094,6 +1096,33 @@ $(document).ready(function () {
           grossTotal.toFixed(2)
       );
       $("#payablePrice").val(grossTotal);
+
+      // Recalculate change when cart total changes
+      $.fn.calculateChange();
+    };
+
+    $.fn.calculateChange = function () {
+      let grossPrice =
+        parseFloat(
+          $("#gross_price")
+            .text()
+            .replace(/[^0-9.]/g, "")
+        ) || 0;
+      let paidAmount = parseFloat($("#inputPaid").val()) || 0;
+      let change = paidAmount - grossPrice;
+
+      // Display change (0 if negative)
+      $("#change_amount").text(
+        (settings && settings.symbol ? settings.symbol : "$") +
+          (change > 0 ? change.toFixed(2) : "0.00")
+      );
+
+      // Color code: green if change, red if insufficient
+      if (change >= 0) {
+        $("#change_amount").css("color", "#28a745");
+      } else {
+        $("#change_amount").css("color", "#dc3545");
+      }
     };
 
     $.fn.renderTable = function (cartList) {
@@ -1240,14 +1269,19 @@ $(document).ready(function () {
         subTotal += parseFloat(item.price) * parseInt(item.quantity);
       });
 
-      let totalVat = vat > 0 ? (subTotal * vat) / 100 : 0;
+      // Get tax rate from input or settings
+      let taxRate = parseFloat($("#inputTax").val()) || 0;
+      if (taxRate === 0 && settings && settings.charge_tax && vat > 0) {
+        taxRate = vat;
+      }
+
+      let totalVat = taxRate > 0 ? (subTotal * taxRate) / 100 : 0;
       let grossTotal = subTotal + totalVat - parseFloat(discount);
 
       // Set payment as full amount (cash payment)
       let paid = grossTotal;
       let change = 0;
       let orderTotal = grossTotal;
-      let orderNumber = Date.now();
 
       // Get currency symbol
       let currency = settings && settings.symbol ? settings.symbol : "PKR ";
@@ -1263,148 +1297,6 @@ $(document).ready(function () {
         settings && settings.footer
           ? settings.footer
           : "Thank you for your business!";
-
-      // Generate receipt HTML
-      let items = "";
-      cart.forEach((item) => {
-        let itemTotal = parseFloat(item.price) * parseInt(item.quantity);
-        items += `
-          <tr style="border-bottom: 1px solid #eee;">
-            <td style="padding: 12px 8px;">${item.product_name}</td>
-            <td style="padding: 12px 8px; text-align: center;">${
-              item.quantity
-            }</td>
-            <td style="padding: 12px 8px; text-align: right;">${currency}${itemTotal.toFixed(
-          2
-        )}</td>
-          </tr>`;
-      });
-
-      let tax_row = "";
-      if (vat > 0) {
-        tax_row = `<tr>
-                <td style="padding: 5px 0;">Tax (${vat}%)</td>
-                <td style="padding: 5px 0;">:</td>
-                <td style="padding: 5px 0; text-align: right;">${currency}${parseFloat(
-          totalVat
-        ).toFixed(2)}</td>
-            </tr>`;
-      }
-
-      let receipt = `
-        <div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 30px; background: white;">
-            <div style="text-align: center; margin-bottom: 25px; border-bottom: 3px solid #333; padding-bottom: 15px;">
-              <img style="max-width: 150px; max-height: 100px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;" src="assets/images/logo.jpeg" alt="Logo" onerror="this.style.display='none'" />
-              <h2 style="margin: 10px 0; font-size: 32px; font-weight: bold; color: #333;">${companyName}</h2>
-              ${
-                companyAddress
-                  ? `<p style="margin: 5px 0; color: #666; font-size: 14px;">${companyAddress}</p>`
-                  : ""
-              }
-              ${
-                companyContact
-                  ? `<p style="margin: 5px 0; color: #666; font-size: 14px;">${companyContact}</p>`
-                  : ""
-              }
-              <p style="margin: 8px 0; color: #999; font-size: 13px;">${date}</p>
-            </div>
-            
-            <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 5px;">
-              <table style="width: 100%;">
-                <tr>
-                  <td style="padding: 5px 0;"><strong style="color: #333;">Order #:</strong></td>
-                  <td style="padding: 5px 0; text-align: right;">${orderNumber}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 5px 0;"><strong style="color: #333;">Customer:</strong></td>
-                  <td style="padding: 5px 0; text-align: right;">${
-                    customer.name
-                  }</td>
-                </tr>
-                <tr>
-                  <td style="padding: 5px 0;"><strong style="color: #333;">Served by:</strong></td>
-                  <td style="padding: 5px 0; text-align: right;">${
-                    user.fullname || "Administrator"
-                  }</td>
-                </tr>
-              </table>
-            </div>
-            
-            <div style="margin: 25px 0;">
-              <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                  <tr style="background: #333; color: white;">
-                    <th style="padding: 12px 8px; text-align: left; border-bottom: 2px solid #333;">Item</th>
-                    <th style="padding: 12px 8px; text-align: center; border-bottom: 2px solid #333;">Qty</th>
-                    <th style="padding: 12px 8px; text-align: right; border-bottom: 2px solid #333;">Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${items}
-                </tbody>
-              </table>
-            </div>
-            
-            <hr style="border: 1px solid #ddd; margin: 20px 0;">
-            
-            <table style="width: 100%; margin: 20px 0; font-size: 15px;">
-              <tbody>
-                <tr>
-                  <td style="padding: 8px 0; width: 50%;"><strong>Subtotal</strong></td>
-                  <td style="padding: 8px 0; width: 10%;">:</td>
-                  <td style="padding: 8px 0; text-align: right; width: 40%;"><strong>${currency}${subTotal.toFixed(
-        2
-      )}</strong></td>
-                </tr>
-                ${
-                  discount > 0
-                    ? `<tr>
-                  <td style="padding: 8px 0;">Discount</td>
-                  <td style="padding: 8px 0;">:</td>
-                  <td style="padding: 8px 0; text-align: right; color: #d9534f; font-weight: bold;">-${currency}${parseFloat(
-                        discount
-                      ).toFixed(2)}</td>
-                </tr>`
-                    : ""
-                }
-                ${tax_row}
-              </tbody>
-            </table>
-            
-            <hr style="border: 2px solid #333; margin: 20px 0;">
-            
-            <table style="width: 100%; margin: 20px 0;">
-              <tbody>
-                <tr style="background: #f0f0f0;">
-                  <td style="padding: 15px 10px; width: 50%;"><h3 style="margin: 0; font-size: 24px; color: #333;">Total</h3></td>
-                  <td style="padding: 15px 10px; width: 10%;">:</td>
-                  <td style="padding: 15px 10px; text-align: right; width: 40%;"><h3 style="margin: 0; font-size: 24px; color: #333;">${currency}${parseFloat(
-        orderTotal
-      ).toFixed(2)}</h3></td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 10px;">Paid</td>
-                  <td style="padding: 8px 10px;">:</td>
-                  <td style="padding: 8px 10px; text-align: right;">${currency}${parseFloat(
-        paid
-      ).toFixed(2)}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px 10px;">Change</td>
-                  <td style="padding: 8px 10px;">:</td>
-                  <td style="padding: 8px 10px; text-align: right;">${currency}${parseFloat(
-        change
-      ).toFixed(2)}</td>
-                </tr>
-              </tbody>
-            </table>
-            
-            <hr style="border: 1px solid #ddd; margin: 25px 0;">
-            
-            <div style="text-align: center; margin-top: 25px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
-              <p style="margin: 0; color: #666; font-style: italic; font-size: 14px;">${companyFooter}</p>
-            </div>
-        </div>`;
 
       // Make a copy of cart before clearing
       let cartCopy = JSON.parse(JSON.stringify(cart));
@@ -1425,7 +1317,7 @@ $(document).ready(function () {
         paid: parseFloat(paid).toFixed(2),
       };
 
-      // Save transaction to database
+      // Save transaction to database first to get the order number
       $.ajax({
         url: api + "transactions/new",
         type: "POST",
@@ -1435,6 +1327,177 @@ $(document).ready(function () {
         processData: false,
         success: function (response) {
           console.log("Transaction saved successfully", response);
+
+          // Use the returned ID as order number
+          let orderNumber = response.id;
+
+          // Generate receipt HTML with the actual order number
+          let items = "";
+          cartCopy.forEach((item) => {
+            let itemTotal = parseFloat(item.price) * parseInt(item.quantity);
+            items += `
+              <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 12px 8px;">${item.product_name}</td>
+                <td style="padding: 12px 8px; text-align: center;">${
+                  item.quantity
+                }</td>
+                <td style="padding: 12px 8px; text-align: right;">${currency}${itemTotal.toFixed(
+              2
+            )}</td>
+              </tr>`;
+          });
+
+          let receipt = `<div style="max-width: 800px; margin: 0 auto; padding: 40px; font-family: Arial, sans-serif; background: #fff;">                            
+            <!-- Header Section -->
+            <div style="padding: 30px; border-radius: 8px; margin-bottom: 30px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img style="max-width: 300px; max-height: 120px; width: auto; height: auto;" src="assets/images/logo.jpeg" alt="Logo" onerror="this.style.display='none'" />
+                </div>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0; font-size: 24px; color: #333; font-weight: 700;">${companyName}</h2>
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">${
+                  companyAddress || ""
+                }</p>
+                <p style="margin: 0; font-size: 12px; color: #666;">${
+                  companyContact || ""
+                }</p>
+            </div>
+            <h1 style="margin: 0; font-size: 42px; color: #000; font-weight: 700; text-align: center;">INVOICE</h1>
+        </div>
+
+        <!-- Client and Invoice Details -->
+        <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+            <div style="flex: 1;">
+                <p style="margin: 0 0 10px 0; font-weight: 700; font-size: 14px; color: #000;">Bill to:</p>
+                <p style="margin: 0; font-size: 18px; font-weight: 600; color: #333;">${
+                  customer.name || "Walk in Customer"
+                }</p>
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Customer</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="margin-bottom: 15px;">
+                    <p style="margin: 0; font-weight: 700; font-size: 12px; color: #000;">Order #</p>
+                    <p style="margin: 0; font-size: 14px; color: #333;">${orderNumber}</p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <p style="margin: 0; font-weight: 700; font-size: 12px; color: #000;">Date</p>
+                    <p style="margin: 0; font-size: 14px; color: #333;">${date}</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-weight: 700; font-size: 12px; color: #000;">Cashier</p>
+                    <p style="margin: 0; font-size: 14px; color: #333;">${
+                      user.fullname || "Administrator"
+                    }</p>
+                </div>
+            </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+
+        <!-- Items Table -->
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+            <thead>
+                <tr style="border-bottom: 2px solid #000;">
+                    <th style="text-align: left; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">ITEMS</th>
+                    <th style="text-align: center; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">QTY</th>
+                    <th style="text-align: right; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">PRICE</th>
+                    <th style="text-align: right; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${cart
+                  .map(
+                    (item) => `
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 12px 8px; font-size: 12px; color: #333;">${
+                      item.product_name
+                    }</td>
+                    <td style="text-align: center; padding: 12px 8px; font-size: 12px; color: #333;">${
+                      item.quantity
+                    }</td>
+                    <td style="text-align: right; padding: 12px 8px; font-size: 12px; color: #333;">${parseFloat(
+                      item.price
+                    ).toFixed(2)}</td>
+                    <td style="text-align: right; padding: 12px 8px; font-size: 12px; color: #333; font-weight: 600;">${(
+                      item.quantity * parseFloat(item.price)
+                    ).toFixed(2)}</td>
+                </tr>
+                `
+                  )
+                  .join("")}
+                
+                <tr style="border-top: 2px solid #ddd;">
+                    <td colspan="3" style="text-align: right; padding: 12px 8px; font-size: 12px; font-weight: 600;">Subtotal:</td>
+                    <td style="text-align: right; padding: 12px 8px; font-size: 12px; font-weight: 600;">${subTotal.toFixed(
+                      2
+                    )}</td>
+                </tr>
+                ${
+                  discount > 0
+                    ? `
+                <tr>
+                    <td colspan="3" style="text-align: right; padding: 8px; font-size: 12px;">Discount:</td>
+                    <td style="text-align: right; padding: 8px; font-size: 12px;">${parseFloat(
+                      discount
+                    ).toFixed(2)}</td>
+                </tr>
+                `
+                    : ""
+                }
+                ${
+                  taxRate > 0
+                    ? `
+                <tr>
+                    <td colspan="3" style="text-align: right; padding: 8px; font-size: 12px;">Tax (${taxRate}%):</td>
+                    <td style="text-align: right; padding: 8px; font-size: 12px;">${parseFloat(
+                      totalVat
+                    ).toFixed(2)}</td>
+                </tr>
+                `
+                    : ""
+                }
+            </tbody>
+        </table>
+
+        <!-- Notes and Total Section -->
+        <div style="display: flex; justify-content: space-between; padding: 20px; border-radius: 8px;">
+            <div style="flex: 1; padding-right: 20px;">
+                <p style="margin: 0 0 10px 0; font-weight: 700; font-size: 14px; color: #000;">Notes:</p>
+                <p style="margin: 0; font-size: 12px; color: #666; line-height: 1.6;">${
+                  companyFooter || "Thank you for your business!"
+                }</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: #000;">TOTAL</p>
+                <p style="margin: 0; font-size: 32px; font-weight: 700; color: #000;">${parseFloat(
+                  orderTotal
+                ).toFixed(2)}</p>
+            </div>
+        </div>
+        
+        <!-- Customer Instructions - Full Width -->
+        <div style="margin-top: 20px; padding: 20px; background: #f0f0f0; border-radius: 5px;">
+            <p style="margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: #000; text-align: center;">Customer Instructions</p>
+            <p style="margin: 0; font-size: 12px; color: #555; line-height: 1.8; text-align: left;">• Please verify all items before leaving<br>• Returns accepted within 7 days with receipt<br>• For any queries, contact customer service</p>
+        </div>
+    </div>`;
+
+          // Clear cart and show invoice
+          cart = [];
+
+          // Show invoice in modal
+          $("#viewTransaction").html("");
+          $("#viewTransaction").html(receipt);
+          $("#orderModal").modal("show");
+
+          // Reload and reset
+          $(document).renderTable(cart);
+
+          // Reset form
+          $("#inputDiscount").val("");
+          $("#inputTax").val("");
+          $("#customer").val('{"id": 0, "name": "Walk in customer"}');
+
           // Reload transactions if on transactions page
           if (typeof loadTransactions === "function") {
             setTimeout(function () {
@@ -1448,21 +1511,6 @@ $(document).ready(function () {
           console.error("Status:", status);
         },
       });
-
-      // Clear cart and show invoice
-      cart = [];
-
-      // Show invoice in modal
-      $("#viewTransaction").html("");
-      $("#viewTransaction").html(receipt);
-      $("#orderModal").modal("show");
-
-      // Reload and reset
-      $(document).renderTable(cart);
-
-      // Reset form
-      $("#inputDiscount").val("");
-      $("#customer").val('{"id": 0, "name": "Walk in customer"}');
     }
 
     $("#hold").on("click", function () {
@@ -1576,85 +1624,153 @@ $(document).ready(function () {
         method = "POST";
       }
 
-      receipt = `<div style="font-size: 10px;">                            
-        <p style="text-align: center;">
-        ${
-          settings.img == ""
-            ? settings.img
-            : '<img style="max-width: 50px;max-width: 100px;" src ="' +
-              img_path +
-              settings.img +
-              '" /><br>'
-        }
-            <span style="font-size: 22px;">${settings.store}</span> <br>
-            ${settings.address_one} <br>
-            ${settings.address_two} <br>
-            ${
-              settings.contact != "" ? "Tel: " + settings.contact + "<br>" : ""
-            } 
-            ${settings.tax != "" ? "Vat No: " + settings.tax + "<br>" : ""} 
-        </p>
-        <hr>
-        <left>
-            <p>
-            Order No : ${orderNumber} <br>
-            Ref No : ${refNumber == "" ? orderNumber : refNumber} <br>
-            Customer : ${
-              customer == 0 ? "Walk in customer" : customer.name
-            } <br>
-            Cashier : ${user.fullname} <br>
-            Date : ${date}<br>
-            </p>
+      receipt = `<div style="max-width: 800px; margin: 0 auto; padding: 40px; font-family: Arial, sans-serif; background: #fff;">                            
+        <!-- Header Section -->
+        <div style="background: linear-gradient(to right, #f9f3e8, #f5e6d3); padding: 30px; border-radius: 8px; margin-bottom: 30px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img style="max-width: 100px; max-height: 80px;" src="assets/images/logo.jpeg" alt="Logo" onerror="this.style.display='none'" />
+            </div>
+            <div style="text-align: right; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 16px; color: #333; font-weight: 600;">${
+                  settings.store
+                }</h2>
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">${
+                  settings.address_one
+                }</p>
+                <p style="margin: 0; font-size: 12px; color: #666;">${
+                  settings.address_two
+                }</p>
+                <p style="margin: 0; font-size: 12px; color: #666;">${
+                  settings.contact ? "Tel: " + settings.contact : ""
+                }</p>
+                <p style="margin: 0; font-size: 12px; color: #666;">${
+                  settings.tax ? "Tax ID: " + settings.tax : ""
+                }</p>
+            </div>
+            <h1 style="margin: 0; font-size: 42px; color: #000; font-weight: 700;">INVOICE</h1>
+        </div>
 
-        </left>
-        <hr>
-        <table width="100%">
-            <thead style="text-align: left;">
-            <tr>
-                <th>Item</th>
-                <th>Qty</th>
-                <th>Price</th>
-            </tr>
+        <!-- Client and Invoice Details -->
+        <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+            <div style="flex: 1;">
+                <p style="margin: 0 0 10px 0; font-weight: 700; font-size: 14px; color: #000;">Bill to:</p>
+                <p style="margin: 0; font-size: 18px; font-weight: 600; color: #333;">${
+                  customer == 0 ? "Walk in Customer" : customer.name
+                }</p>
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Customer</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="margin-bottom: 15px;">
+                    <p style="margin: 0; font-weight: 700; font-size: 12px; color: #000;">Order #</p>
+                    <p style="margin: 0; font-size: 14px; color: #333;">${orderNumber}</p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <p style="margin: 0; font-weight: 700; font-size: 12px; color: #000;">Date</p>
+                    <p style="margin: 0; font-size: 14px; color: #333;">${date}</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-weight: 700; font-size: 12px; color: #000;">Cashier</p>
+                    <p style="margin: 0; font-size: 14px; color: #333;">${
+                      user.fullname
+                    }</p>
+                </div>
+            </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+
+        <!-- Items Table -->
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+            <thead>
+                <tr style="border-bottom: 2px solid #000; background: #f5f5f5;">
+                    <th style="text-align: left; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">ITEMS</th>
+                    <th style="text-align: center; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">QTY</th>
+                    <th style="text-align: right; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">PRICE</th>
+                    <th style="text-align: right; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">AMOUNT</th>
+                </tr>
             </thead>
             <tbody>
-            ${items}                
-     
-            <tr>                        
-                <td><b>Subtotal</b></td>
-                <td>:</td>
-                <td><b>${settings.symbol}${subTotal.toFixed(2)}</b></td>
-            </tr>
-            <tr>
-                <td>Discount</td>
-                <td>:</td>
-                <td>${
+                ${cart
+                  .map(
+                    (item) => `
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 12px 8px; font-size: 12px; color: #333;">${
+                      item.product_name
+                    }</td>
+                    <td style="text-align: center; padding: 12px 8px; font-size: 12px; color: #333;">${
+                      item.quantity
+                    }</td>
+                    <td style="text-align: right; padding: 12px 8px; font-size: 12px; color: #333;">${
+                      settings.symbol
+                    }${parseFloat(item.price).toFixed(2)}</td>
+                    <td style="text-align: right; padding: 12px 8px; font-size: 12px; color: #333; font-weight: 600;">${
+                      settings.symbol
+                    }${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+                </tr>
+                `
+                  )
+                  .join("")}
+                
+                <tr style="border-top: 2px solid #ddd;">
+                    <td colspan="3" style="text-align: right; padding: 12px 8px; font-size: 12px; font-weight: 600;">Subtotal:</td>
+                    <td style="text-align: right; padding: 12px 8px; font-size: 12px; font-weight: 600;">${
+                      settings.symbol
+                    }${subTotal.toFixed(2)}</td>
+                </tr>
+                ${
                   discount > 0
-                    ? settings.symbol + parseFloat(discount).toFixed(2)
+                    ? `
+                <tr>
+                    <td colspan="3" style="text-align: right; padding: 8px; font-size: 12px;">Discount:</td>
+                    <td style="text-align: right; padding: 8px; font-size: 12px;">${
+                      settings.symbol
+                    }${parseFloat(discount).toFixed(2)}</td>
+                </tr>
+                `
                     : ""
-                }</td>
-            </tr>
-            
-            ${tax_row}
-        
-            <tr>
-                <td><h3>Total</h3></td>
-                <td><h3>:</h3></td>
-                <td>
-                    <h3>${settings.symbol}${parseFloat(orderTotal).toFixed(
-        2
-      )}</h3>
-                </td>
-            </tr>
-            ${payment == 0 ? "" : payment}
+                }
+                ${
+                  totalVat > 0
+                    ? `
+                <tr>
+                    <td colspan="3" style="text-align: right; padding: 8px; font-size: 12px;">Tax:</td>
+                    <td style="text-align: right; padding: 8px; font-size: 12px;">${
+                      settings.symbol
+                    }${parseFloat(totalVat).toFixed(2)}</td>
+                </tr>
+                `
+                    : ""
+                }
             </tbody>
-            </table>
-            <br>
-            <hr>
-            <br>
-            <p style="text-align: center;">
-             ${settings.footer}
-             </p>
-            </div>`;
+        </table>
+
+        <!-- Notes and Total Section -->
+        <div style="display: flex; justify-content: space-between; background: linear-gradient(to right, #f9f3e8, #fde8b8); padding: 20px; border-radius: 8px;">
+            <div style="flex: 1; padding-right: 20px;">
+                <p style="margin: 0 0 10px 0; font-weight: 700; font-size: 14px; color: #000;">Notes:</p>
+                <p style="margin: 0; font-size: 12px; color: #666; line-height: 1.6;">${
+                  settings.footer || "Thank you for your business!"
+                }</p>
+                ${
+                  refNumber
+                    ? `<p style="margin: 5px 0 0 0; font-size: 11px; color: #888;">Ref: ${refNumber}</p>`
+                    : ""
+                }
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: #000;">TOTAL</p>
+                <p style="margin: 0; font-size: 32px; font-weight: 700; color: #000;">${
+                  settings.symbol
+                }${parseFloat(orderTotal).toFixed(2)}</p>
+            </div>
+        </div>
+        
+        <!-- Customer Instructions - Full Width -->
+        <div style="margin-top: 20px; padding: 20px; background: #f0f0f0; border-radius: 5px;">
+            <p style="margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: #000; text-align: center;">Customer Instructions</p>
+            <p style="margin: 0; font-size: 12px; color: #555; line-height: 1.8; text-align: left;">• Please verify all items before leaving<br>• Returns accepted within 7 days with receipt<br>• For any queries, contact customer service</p>
+        </div>
+    </div>`;
 
       if (status == 3) {
         if (cart.length > 0) {
@@ -1974,6 +2090,21 @@ $(document).ready(function () {
       }
     });
 
+    $("#backToDashboard").click(function () {
+      // Show dashboard view
+      $("#pos_view").show();
+      $("#products_view").hide();
+      $("#transactions_view").hide();
+
+      // Show all navigation buttons
+      $("#transactions").show();
+      $("#productsSelection").show();
+      $("#pointofsale").show();
+
+      // Hide back button
+      $(this).hide();
+    });
+
     $("#transactions").click(function () {
       loadTransactions();
       loadUserList();
@@ -1983,6 +2114,7 @@ $(document).ready(function () {
       $("#pointofsale").show();
       $("#productsSelection").show();
       $("#transactions_view").show();
+      $("#backToDashboard").show();
       $(this).hide();
     });
 
@@ -1992,6 +2124,7 @@ $(document).ready(function () {
       $("#transactions").show();
       $("#productsSelection").show();
       $("#transactions_view").hide();
+      $("#backToDashboard").hide();
       $(this).hide();
     });
 
@@ -2001,6 +2134,7 @@ $(document).ready(function () {
       $("#transactions_view").hide();
       $("#transactions").show();
       $("#pointofsale").show();
+      $("#backToDashboard").show();
       $(this).hide();
 
       // Load products in the products view
@@ -2964,7 +3098,7 @@ function loadTransactions() {
                                 <td>${
                                   trans.paid == ""
                                     ? '<button class="btn btn-dark"><i class="fa fa-search-plus"></i></button>'
-                                    : '<button onClick="$(this).viewTransaction(' +
+                                    : '<button onClick="viewTransactionModal(' +
                                       index +
                                       ')" class="btn btn-info"><i class="fa fa-search-plus"></i></button></td>'
                                 }</tr>
@@ -3120,14 +3254,16 @@ function tillFilter(tills) {
   });
 }
 
-$.fn.viewTransaction = function (index) {
+function viewTransaction(index) {
   transaction_index = index;
 
   let discount = allTransactions[index].discount;
   let customer =
-    allTransactions[index].customer == 0
+    allTransactions[index].customer == 0 || !allTransactions[index].customer
       ? "Walk in Customer"
-      : allTransactions[index].customer.username;
+      : allTransactions[index].customer.name ||
+        allTransactions[index].customer.username ||
+        "Walk in Customer";
   let refNumber =
     allTransactions[index].ref_number != ""
       ? allTransactions[index].ref_number
@@ -3190,94 +3326,147 @@ $.fn.viewTransaction = function (index) {
             </tr>`;
   }
 
-  receipt = `<div style="font-size: 10px;">                            
-        <p style="text-align: center;">
-        <img style="max-width: 150px; max-height: 100px; margin-bottom: 10px;" src="assets/images/logo.jpeg" alt="Logo" onerror="this.style.display='none'" /><br>
-        ${
-          settings.img == ""
-            ? settings.img
-            : '<img style="max-width: 50px;max-width: 100px;" src ="' +
-              img_path +
-              settings.img +
-              '" /><br>'
-        }
-            <span style="font-size: 22px;">${settings.store}</span> <br>
-            ${settings.address_one} <br>
-            ${settings.address_two} <br>
-            ${
-              settings.contact != "" ? "Tel: " + settings.contact + "<br>" : ""
-            } 
-            ${settings.tax != "" ? "Vat No: " + settings.tax + "<br>" : ""} 
-    </p>
-    <hr>
-    <left>
-        <p>
-        Invoice : ${orderNumber} <br>
-        Ref No : ${refNumber} <br>
-        Customer : ${
-          allTransactions[index].customer == 0
-            ? "Walk in Customer"
-            : allTransactions[index].customer.name
-        } <br>
-        Cashier : ${allTransactions[index].user} <br>
-        Date : ${moment(allTransactions[index].date).format(
-          "DD MMM YYYY HH:mm:ss"
-        )}<br>
-        </p>
+  receipt = `<div style="max-width: 800px; margin: 0 auto; padding: 40px; font-family: Arial, sans-serif; background: #fff;">                            
+        <!-- Header Section -->
+        <div style="padding: 30px; border-radius: 8px; margin-bottom: 30px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img style="max-width: 300px; max-height: 120px; width: auto; height: auto;" src="assets/images/logo.jpeg" alt="Logo" onerror="this.style.display='none'" />
+            </div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 24px; color: #333; font-weight: 700;">${
+                  settings.store
+                }</h2>
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">${
+                  settings.address_one
+                }</p>
+                <p style="margin: 0; font-size: 12px; color: #666;">${
+                  settings.address_two
+                }</p>
+                <p style="margin: 0; font-size: 12px; color: #666;">${
+                  settings.contact ? "Tel: " + settings.contact : ""
+                }</p>
+                <p style="margin: 0; font-size: 12px; color: #666;">${
+                  settings.tax ? "Tax ID: " + settings.tax : ""
+                }</p>
+            </div>
+            <h1 style="margin: 0; font-size: 42px; color: #000; font-weight: 700; text-align: center;">INVOICE</h1>
+        </div>
 
-    </left>
-    <hr>
-    <table width="100%">
-        <thead style="text-align: left;">
-        <tr>
-            <th>Item</th>
-            <th>Qty</th>
-            <th>Price</th>
-        </tr>
-        </thead>
-        <tbody>
-        ${items}                
- 
-        <tr>                        
-            <td><b>Subtotal</b></td>
-            <td>:</td>
-            <td><b>${settings.symbol}${allTransactions[index].subtotal}</b></td>
-        </tr>
-        <tr>
-            <td>Discount</td>
-            <td>:</td>
-            <td>${
-              discount > 0
-                ? settings.symbol +
-                  parseFloat(allTransactions[index].discount).toFixed(2)
-                : ""
-            }</td>
-        </tr>
-        
-        ${tax_row}
-    
-        <tr>
-            <td><h3>Total</h3></td>
-            <td><h3>:</h3></td>
-            <td>
-                <h3>${settings.symbol}${allTransactions[index].total}</h3>
-            </td>
-        </tr>
-        ${payment == 0 ? "" : payment}
-        </tbody>
+        <!-- Client and Invoice Details -->
+        <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+            <div style="flex: 1;">
+                <p style="margin: 0 0 10px 0; font-weight: 700; font-size: 14px; color: #000;">Bill to:</p>
+                <p style="margin: 0; font-size: 18px; font-weight: 600; color: #333;">${customer}</p>
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Customer</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="margin-bottom: 15px;">
+                    <p style="margin: 0; font-weight: 700; font-size: 12px; color: #000;">Invoice #</p>
+                    <p style="margin: 0; font-size: 14px; color: #333;">${orderNumber}</p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <p style="margin: 0; font-weight: 700; font-size: 12px; color: #000;">Date</p>
+                    <p style="margin: 0; font-size: 14px; color: #333;">${moment(
+                      allTransactions[index].date
+                    ).format("MM/DD/YY")}</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-weight: 700; font-size: 12px; color: #000;">Invoice due date</p>
+                    <p style="margin: 0; font-size: 14px; color: #333;">${moment(
+                      allTransactions[index].date
+                    ).format("MM/DD/YY")}</p>
+                </div>
+            </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+
+        <!-- Items Table -->
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+            <thead>
+                <tr style="border-bottom: 2px solid #000;">
+                    <th style="text-align: left; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">ITEMS</th>
+                    <th style="text-align: left; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">DESCRIPTION</th>
+                    <th style="text-align: center; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">QTY</th>
+                    <th style="text-align: right; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">PRICE</th>
+                    <th style="text-align: center; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">TAX</th>
+                    <th style="text-align: right; padding: 12px 8px; font-size: 12px; font-weight: 700; color: #000;">AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${products
+                  .map(
+                    (item) => `
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 12px 8px; font-size: 12px; color: #333;">Item</td>
+                    <td style="padding: 12px 8px; font-size: 12px; color: #333;">${
+                      item.product_name
+                    }</td>
+                    <td style="text-align: center; padding: 12px 8px; font-size: 12px; color: #333;">${
+                      item.quantity
+                    }</td>
+                    <td style="text-align: right; padding: 12px 8px; font-size: 12px; color: #333;">${
+                      settings.symbol
+                    }${parseFloat(item.price).toFixed(2)}</td>
+                    <td style="text-align: center; padding: 12px 8px; font-size: 12px; color: #333;">${
+                      settings.charge_tax ? settings.percentage + "%" : "0%"
+                    }</td>
+                    <td style="text-align: right; padding: 12px 8px; font-size: 12px; color: #333; font-weight: 600;">${
+                      settings.symbol
+                    }${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+                </tr>
+                `
+                  )
+                  .join("")}
+            </tbody>
         </table>
-        <br>
-        <hr>
-        <br>
-        <p style="text-align: center;">
-         ${settings.footer}
-         </p>
-        </div>`;
+
+        <!-- Notes and Total Section -->
+        <div style="display: flex; justify-content: space-between; background: linear-gradient(to right, #f9f3e8, #fde8b8); padding: 20px; border-radius: 8px;">
+            <div style="flex: 1; padding-right: 20px;">
+                <p style="margin: 0 0 10px 0; font-weight: 700; font-size: 14px; color: #000;">Notes:</p>
+                <p style="margin: 0; font-size: 12px; color: #666; line-height: 1.6;">${
+                  settings.footer || "Thank you for your business!"
+                }</p>
+                <p style="margin: 5px 0 0 0; font-size: 11px; color: #888;">Cashier: ${
+                  allTransactions[index].user
+                }</p>
+                <p style="margin: 0; font-size: 11px; color: #888;">Ref: ${refNumber}</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: #000;">TOTAL</p>
+                <p style="margin: 0; font-size: 32px; font-weight: 700; color: #000;">${
+                  settings.symbol
+                }${parseFloat(allTransactions[index].total).toFixed(2)}</p>
+                ${
+                  discount > 0
+                    ? `<p style="margin: 10px 0 0 0; font-size: 11px; color: #666;">Discount: ${
+                        settings.symbol
+                      }${parseFloat(discount).toFixed(2)}</p>`
+                    : ""
+                }
+                ${
+                  settings.charge_tax
+                    ? `<p style="margin: 5px 0 0 0; font-size: 11px; color: #666;">Tax (${
+                        settings.percentage
+                      }%): ${settings.symbol}${parseFloat(
+                        allTransactions[index].tax
+                      ).toFixed(2)}</p>`
+                    : ""
+                }
+            </div>
+        </div>
+    </div>`;
 
   $("#viewTransaction").html("");
   $("#viewTransaction").html(receipt);
 
   $("#orderModal").modal("show");
+}
+
+// Wrapper function for onclick handlers - expose to window for inline onclick
+window.viewTransactionModal = function (index) {
+  viewTransaction(index);
 };
 
 $("#status").change(function () {

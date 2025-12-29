@@ -82,6 +82,10 @@
 
                     <div class="button-list pull-right m-t-15 m-l-10">  
 
+                            <button id="backToDashboard" type="button" class="btn btn-primary waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Back to Dashboard" style="display: none;">
+                            <span class="btn-label"><i class="glyphicon glyphicon-home"></i> </span>  Dashboard
+                            </button>
+
                             <button id="transactions" type="button" class="btn btn-default waves-effect waves-light p_three" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View transaction history">
                             <span class="btn-label"><i class=" 	glyphicon glyphicon-credit-card"></i> </span>  Transactions 
                             </button>
@@ -91,7 +95,7 @@
                             </button>
 
                             <button id="productsSelection" type="button" class="btn btn-default waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Browse and select products">
-                                <span class="btn-label"><i class="glyphicon glyphicon-th-large"></i> </span>  Products Selection
+                                <span class="btn-label"><i class="glyphicon glyphicon-th-large"></i> </span>  Products List
                             </button>
 
                             <button id="pointofsale" type="button" class="btn btn-default waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Checkout and payment">
@@ -212,7 +216,7 @@
                                         <th>Invoice</th>                                      
                                         <th>Date</th>
                                         <th>Total</th>
-                                        <th>Paid</th>
+                                        <th>Payable</th>
                                         <th>Method</th>
                                         <th>Cashier</th>
                                         <th>View</th>
@@ -253,7 +257,7 @@
                       </div>
                   </div>
                   <hr>
-                  <div class="row" id="parent_products"> 
+                  <div id="parent_products"> 
                       
                   </div>
               </div>
@@ -313,23 +317,62 @@
   
                   <hr>
                  <div class="m-t-5">
-                     <div class="row">
-                         <div class="col-md-3">Total Item(s)</div>
-                         <div class="col-md-3">: <sapn id="total">0</sapn></div>
-                         <div class="col-md-3">Price :</div>
-                         <div class="col-md-3">: <span id="price">0.0</span></div>
+                     <!-- Order Summary Section -->
+                     <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                         <div class="row" style="margin-bottom: 10px;">
+                             <div class="col-md-6">
+                                 <strong style="font-size: 14px;">Total Items:</strong>
+                                 <span id="total" style="font-size: 16px; margin-left: 10px; font-weight: 600;">0</span>
+                             </div>
+                             <div class="col-md-6 text-right">
+                                 <strong style="font-size: 14px;">Subtotal:</strong>
+                                 <span id="price" style="font-size: 16px; margin-left: 10px; font-weight: 600;">0.0</span>
+                             </div>
+                         </div>
                      </div>
-                     <div class="row m-t-10">
-                         <div class="col-md-3">Discount</div>
-                         <div class="col-md-3"><input class="form-control" type="number" id="inputDiscount" oninput="$(this).calculateCart();" placeholder="0"></div>
-                         <div class="col-md-3">Tax (%)</div>
-                         <div class="col-md-3"><input class="form-control" type="number" id="inputTax" oninput="$(this).calculateCart();" placeholder="0" step="0.01"></div>
+
+                     <!-- Discount & Tax Section -->
+                     <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #ffc107;">
+                         <div class="row">
+                             <div class="col-md-6" style="padding-right: 10px;">
+                                 <label style="font-weight: 600; margin-bottom: 5px; display: block; font-size: 13px;">Discount Amount</label>
+                                 <input class="form-control" type="number" id="inputDiscount" oninput="$(this).calculateCart();" placeholder="Enter discount" style="font-size: 14px; height: 38px;">
+                             </div>
+                             <div class="col-md-6" style="padding-left: 10px;">
+                                 <label style="font-weight: 600; margin-bottom: 5px; display: block; font-size: 13px;">Tax Rate (%)</label>
+                                 <input class="form-control" type="number" id="inputTax" oninput="$(this).calculateCart();" placeholder="Enter tax %" step="0.01" style="font-size: 14px; height: 38px;">
+                             </div>
+                         </div>
                      </div>
-                     <div class="row m-t-10">
-                         <div class="col-md-3"></div>
-                         <div class="col-md-3"></div>
-                         <div class="col-md-3">Gross Price (inc Tax)</div>
-                         <div class="col-md-3"><h3 id="gross_price">0.00</h3></div>
+
+                     <!-- Total Amount Section -->
+                     <div style="background: #d4edda; padding: 15px; border-radius: 5px; margin-bottom: 15px; border: 2px solid #28a745;">
+                         <div class="row">
+                             <div class="col-md-6">
+                                 <div style="font-size: 16px; font-weight: 700; color: #155724;">TOTAL PAYABLE</div>
+                             </div>
+                             <div class="col-md-6 text-right">
+                                 <h2 id="gross_price" style="margin: 0; color: #155724; font-weight: 700;">0.00</h2>
+                             </div>
+                         </div>
+                     </div>
+
+                     <!-- Payment Section -->
+                     <div style="background: #e7f3ff; padding: 15px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #007bff;">
+                         <div class="row" style="margin-bottom: 12px;">
+                             <div class="col-md-12">
+                                 <label style="font-weight: 600; margin-bottom: 5px; display: block; font-size: 14px;">Amount Paid by Customer</label>
+                                 <input class="form-control" type="number" id="inputPaid" oninput="$(this).calculateChange();" placeholder="Enter amount received" step="0.01" style="font-size: 16px; height: 45px; font-weight: 600;">
+                             </div>
+                         </div>
+                         <div class="row">
+                             <div class="col-md-6">
+                                 <div style="font-size: 14px; font-weight: 600; color: #0056b3;">Change to Return:</div>
+                             </div>
+                             <div class="col-md-6 text-right">
+                                 <h3 id="change_amount" style="color: #28a745; margin: 0; font-weight: 700;">0.00</h3>
+                             </div>
+                         </div>
                      </div>
   
                  </div>
@@ -1010,6 +1053,22 @@
 
 </div>
 
+  <!-- Footer -->
+  <footer class="footer" style="background: linear-gradient(135deg, #2c3e50 0%, #17411c 100%); padding: 20px 0; margin-top: 0; margin-bottom: 0; box-shadow: 0 -2px 8px rgba(0,0,0,0.1);">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12" style="text-align: center;">
+          <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 500;">
+            Created by <strong>Mr. Zahid Ghaffar</strong> - Chief Instructor IT
+          </p>
+          <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.7); font-size: 12px;">
+            Creative Hands By TEVTA © 2025
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
 <script> window.$ = window.jQuery = require('jquery'); </script>
 
 <script> 
@@ -1057,7 +1116,7 @@ require('./renderer.js');
      </script>
 
   <!-- Footer -->
-  <footer style="background: linear-gradient(135deg, #2c3e50 0%, #17411c 100%); padding: 20px 0; margin-top: 0; margin-bottom: 0; box-shadow: 0 -2px 8px rgba(0,0,0,0.1);">
+  <footer class="login-footer" style="background: linear-gradient(135deg, #2c3e50 0%, #17411c 100%); padding: 20px 0; margin-top: 0; margin-bottom: 0; box-shadow: 0 -2px 8px rgba(0,0,0,0.1);">
     <div class="container">
       <div class="row">
         <div class="col-sm-12" style="text-align: center;">

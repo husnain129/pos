@@ -117,9 +117,9 @@ app.get("/by-date", async function (req, res) {
 app.post("/new", async function (req, res) {
   let newTransaction = req.body;
   try {
-    await db.query(
+    const result = await db.query(
       `INSERT INTO transactions (ref_number, customer_id, customer_name, total_amount, discount, tax, payment_method, payment_status, status, items, user_id) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
       [
         newTransaction.ref_number,
         newTransaction.customer || null,
@@ -134,7 +134,7 @@ app.post("/new", async function (req, res) {
         newTransaction.user_id || null,
       ]
     );
-    res.sendStatus(200);
+    res.json({ id: result.rows[0].id });
 
     if (newTransaction.paid >= newTransaction.total) {
       await Inventory.decrementInventory(newTransaction.items);
