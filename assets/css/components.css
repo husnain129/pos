@@ -26,8 +26,8 @@
 .btn-default:focus,
 .btn-default:hover,
 .open > .dropdown-toggle.btn-default {
-  background-color: #5fbeaa !important;
-  border: 1px solid #5fbeaa !important;
+  background-color: #17411c !important;
+  border: 1px solid #17411c !important;
 }
 .btn-white,
 .btn-white:hover,
@@ -1027,8 +1027,8 @@ ul.ColVis_collection li {
 }
 
 .btn-categories.active {
-  background-color: #5fbeaa !important;
-  border-color: #5fbeaa !important;
+  background-color: #17411c !important;
+  border-color: #17411c !important;
   color: #fff !important;
-  box-shadow: 0 2px 5px rgba(95, 190, 170, 0.3);
+  box-shadow: 0 2px 5px rgba(23, 65, 28, 0.3);
 }

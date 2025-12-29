@@ -451,6 +451,15 @@ $(document).ready(function () {
             );
           }
         });
+
+        // Also add categories that have no products yet
+        displayCategories.forEach((category) => {
+          if (!categories.includes(category._id)) {
+            $("#categories").append(
+              `<button type="button" id="${category._id}" class="btn btn-categories btn-white waves-effect waves-light">${category.name}</button> `
+            );
+          }
+        });
       });
     }
 
@@ -1008,6 +1017,7 @@ $(document).ready(function () {
                   class: "form-control",
                   type: "number",
                   value: data.quantity,
+                  style: "width: 60px; text-align: center;",
                   onInput: "$(this).qtInput(" + index + ")",
                 }),
                 $("<div>", { class: "input-group-btn btn-xs" }).append(
@@ -1833,13 +1843,13 @@ $(document).ready(function () {
           $("#customer").append(
             $("<option>", {
               text: custData.name,
-              value: `{"id": ${custData._id}, "name": ${custData.name}}`,
+              value: `{"id": ${custData._id}, "name": "${custData.name}"}`,
               selected: "selected",
             })
           );
 
           $("#customer")
-            .val(`{"id": ${custData._id}, "name": ${custData.name}}`)
+            .val(`{"id": ${custData._id}, "name": "${custData.name}"}`)
             .trigger("chosen:updated");
         },
         error: function (data) {
