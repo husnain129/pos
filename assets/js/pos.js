@@ -414,7 +414,7 @@ $(document).ready(function () {
             imgSrc = img_path + item.img;
           }
 
-          let item_info = `<div class="col-lg-2 box ${item.category}"
+          let item_info = `<div class="box ${item.category}"
                                 onclick="$(this).addToCart(${item._id}, ${
             item.quantity
           }, ${item.stock})">
@@ -531,8 +531,14 @@ $(document).ready(function () {
         $("#filter_institute").html(
           `<option value="0">All Institutes</option>`
         );
+        $("#filter_institute_products").html(
+          `<option value="0">All Institutes</option>`
+        );
         data.forEach((institute) => {
           $("#filter_institute").append(
+            `<option value="${institute.id}">${institute.name}</option>`
+          );
+          $("#filter_institute_products").append(
             `<option value="${institute.id}">${institute.name}</option>`
           );
         });
@@ -546,6 +552,88 @@ $(document).ready(function () {
             `<option value="${institute.id}">${institute.name}</option>`
           );
         });
+      });
+    }
+
+    // Load products view with separate search and filter
+    function loadProductsView() {
+      let currentFilterInstitute =
+        parseInt($("#filter_institute_products").val()) || 0;
+
+      let displayProducts = allProducts;
+      let displayCategories = allCategories;
+
+      if (currentFilterInstitute > 0) {
+        displayProducts = allProducts.filter(
+          (product) => product.institute_id == currentFilterInstitute
+        );
+        displayCategories = allCategories.filter(
+          (cat) => cat.institute_id == currentFilterInstitute
+        );
+      }
+
+      $("#parent_products").text("");
+      $("#categories_products").html(
+        `<button type="button" data-category="all" class="btn btn-categories btn-white waves-effect waves-light active">All</button> `
+      );
+
+      let productCategories = [];
+      displayProducts.forEach((item) => {
+        if (!productCategories.includes(item.category)) {
+          productCategories.push(item.category);
+        }
+
+        const skuDisplay = item.sku || item._id || "";
+        let imgSrc = "./assets/images/default.jpg";
+        if (item.image) {
+          imgSrc = "http://localhost:8001/uploads/" + item.image;
+        } else if (item.image_link && item.image_link !== "") {
+          imgSrc = item.image_link;
+        } else if (item.img && item.img !== "") {
+          imgSrc = img_path + item.img;
+        }
+
+        let item_info = `<div class="box ${item.category}"
+                              onclick="$(this).addToCart(${item._id}, ${
+          item.quantity
+        }, ${item.stock})">
+                          <div class="widget-panel widget-style-2 ">                    
+                          <div id="image"><img src="${imgSrc}" id="product_img" alt="" onerror="this.src='./assets/images/default.jpg'"></div>                    
+                                      <div class="text-muted m-t-5 text-center">
+                                      <div class="name" id="product_name">${
+                                        item.name
+                                      }</div> 
+                                      <span class="sku">${skuDisplay}</span>
+                                      <span class="stock">STOCK </span><span class="count">${
+                                        item.stock == 1 ? item.quantity : "N/A"
+                                      }</span></div>
+                                       <sp class="text-success text-center"><b data-plugin="counterup">${
+                                         (settings && settings.symbol
+                                           ? settings.symbol
+                                           : "$") + item.price
+                                       }</b> </sp>
+                          </div>
+                      </div>`;
+        $("#parent_products").append(item_info);
+      });
+
+      productCategories.forEach((category) => {
+        let c = displayCategories.filter(function (ctg) {
+          return ctg._id == category;
+        });
+        if (c.length > 0) {
+          $("#categories_products").append(
+            `<button type="button" data-category="${category}" class="btn btn-categories btn-white waves-effect waves-light">${c[0].name}</button> `
+          );
+        }
+      });
+
+      displayCategories.forEach((category) => {
+        if (!productCategories.includes(category._id)) {
+          $("#categories_products").append(
+            `<button type="button" data-category="${category._id}" class="btn btn-categories btn-white waves-effect waves-light">${category.name}</button> `
+          );
+        }
       });
     }
 
@@ -970,21 +1058,32 @@ $(document).ready(function () {
       $.each(cart, function (index, data) {
         total += data.quantity * data.price;
       });
-      total = total - $("#inputDiscount").val();
+
+      // Apply discount
+      let discount = parseFloat($("#inputDiscount").val()) || 0;
+      total = total - discount;
+
       $("#price").text(
         (settings && settings.symbol ? settings.symbol : "$") + total.toFixed(2)
       );
 
       subTotal = total;
 
-      if ($("#inputDiscount").val() >= total) {
+      if (discount >= total + discount) {
         $("#inputDiscount").val(0);
       }
 
-      if (settings.charge_tax) {
-        totalVat = (total * vat) / 100;
+      // Calculate tax - use custom tax input if provided, otherwise use settings
+      let taxRate = parseFloat($("#inputTax").val()) || 0;
+      if (taxRate === 0 && settings.charge_tax) {
+        taxRate = vat;
+      }
+
+      if (taxRate > 0) {
+        totalVat = (total * taxRate) / 100;
         grossTotal = total + totalVat;
       } else {
+        totalVat = 0;
         grossTotal = total;
       }
 
@@ -1880,16 +1979,32 @@ $(document).ready(function () {
       loadUserList();
 
       $("#pos_view").hide();
+      $("#products_view").hide();
       $("#pointofsale").show();
+      $("#productsSelection").show();
       $("#transactions_view").show();
       $(this).hide();
     });
 
     $("#pointofsale").click(function () {
       $("#pos_view").show();
+      $("#products_view").hide();
       $("#transactions").show();
+      $("#productsSelection").show();
       $("#transactions_view").hide();
       $(this).hide();
+    });
+
+    $("#productsSelection").click(function () {
+      $("#products_view").show();
+      $("#pos_view").hide();
+      $("#transactions_view").hide();
+      $("#transactions").show();
+      $("#pointofsale").show();
+      $(this).hide();
+
+      // Load products in the products view
+      loadProductsView();
     });
 
     $("#viewRefOrders").click(function () {
@@ -2284,6 +2399,38 @@ $(document).ready(function () {
       console.log("All products:", allProducts.length);
       console.log("All categories:", allCategories.length);
       loadProducts();
+    });
+
+    $("#filter_institute_products").change(function () {
+      loadProductsView();
+    });
+
+    // Product search functionality for products view
+    $("#search_products").on("keyup", function () {
+      let searchTerm = $(this).val().toLowerCase();
+      $("#parent_products .box").each(function () {
+        let productName = $(this).find("#product_name").text().toLowerCase();
+        let sku = $(this).find(".sku").text().toLowerCase();
+        if (productName.includes(searchTerm) || sku.includes(searchTerm)) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+
+    // Category filter for products view
+    $(document).on("click", "#categories_products button", function () {
+      $("#categories_products button").removeClass("active");
+      $(this).addClass("active");
+      let category = $(this).attr("data-category");
+
+      if (category === "all") {
+        $("#parent_products .box").show();
+      } else {
+        $("#parent_products .box").hide();
+        $("#parent_products .box." + category).show();
+      }
     });
 
     function loadUserList() {

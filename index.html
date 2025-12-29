@@ -19,7 +19,7 @@
   <div class="main_app">
 
     <!-- Branding Header -->
-    <div id="site-header" style="background: #34495e; padding: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <div id="site-header" style="background: #17411c; padding: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
     <div class="container">
       <div class="row">
         <div class="col-sm-12" style="display: flex; align-items: center; justify-content: space-between;">
@@ -90,8 +90,12 @@
                             <span class="btn-label"><i class="glyphicon glyphicon-user"></i> </span>  Users 
                             </button>
 
-                            <button id="pointofsale" type="button" class="btn btn-default waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Start new sale">
-                                <span class="btn-label"><i class=" 	glyphicon glyphicon-shopping-cart"></i> </span>  Point of Sale
+                            <button id="productsSelection" type="button" class="btn btn-default waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Browse and select products">
+                                <span class="btn-label"><i class="glyphicon glyphicon-th-large"></i> </span>  Products Selection
+                            </button>
+
+                            <button id="pointofsale" type="button" class="btn btn-default waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Checkout and payment">
+                                <span class="btn-label"><i class=" 	glyphicon glyphicon-shopping-cart"></i> </span>  Checkout
                             </button>
 
 
@@ -225,29 +229,64 @@
    </div>
 
 
-   <div id="pos_view">
+   <!-- Products Selection View -->
+   <div id="products_view" style="display: none;">
       <div class="row">
-          <div class="col-md-4">
-              <div class="card-box" id="card-box">
-                  <div class="col-md-12">
-                      <div class="row">
-                          <div class="col-md-10">
-                              <select name="" id="customer" class="form-control">
+          <div class="col-md-12">
+              <div class="card-box">
+                  <h3>Product Selection</h3>
+                  <div class="row">
+                      <div class="col-md-8">
+                          <input type="text" id="search_products" class="form-control" placeholder="Search product by name or sku" style="margin-bottom: 15px;">
+                      </div>
+                      <div class="col-md-4">
+                          <select id="filter_institute_products" class="form-control" style="margin-bottom: 15px;">
+                              <option value="0">All Institutes</option>
                           </select>
-                          </div>
-                          <div class="col-md-2">
-                              <button data-toggle="modal" data-target="#newCustomer" class="btn btn-success"><i class="fa fa-plus"></i></button>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-md-12">
+                          <div id="categories_products">
+                              
                           </div>
                       </div>
-                      <div class="input-group m-t-5" style="position: relative;">
-                          <form action="" id="searchBarCode">
-                              <input type="text" id="skuCode" name="skuCode" class="form-control" placeholder="Search product by name or ID" aria-label="Search product" aria-describedby="basic-addon2" autocomplete="off">
-                              <input type="submit" style="display:none;">
-                          </form>
-                          <span class="input-group-addon" id="basic-addon2">
-                              <i class="glyphicon glyphicon-ok"></i>
-                          </span>
-                          <div id="searchResults" style="position: absolute; top: 100%; left: 0; right: 40px; background: white; border: 1px solid #ddd; max-height: 300px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+                  </div>
+                  <hr>
+                  <div class="row" id="parent_products"> 
+                      
+                  </div>
+              </div>
+          </div>
+      </div>
+   </div>
+
+   <!-- Point of Sale / Checkout View -->
+   <div id="pos_view">
+      <div class="row">
+          <div class="col-md-12">
+              <div class="card-box" id="card-box">
+                  <div class="row m-b-10">
+                      <div class="col-md-10">
+                          <select name="" id="customer" class="form-control">
+                          </select>
+                      </div>
+                      <div class="col-md-2">
+                          <button data-toggle="modal" data-target="#newCustomer" class="btn btn-success btn-block"><i class="fa fa-plus"></i></button>
+                      </div>
+                  </div>
+                  <div class="row m-b-10">
+                      <div class="col-md-12">
+                          <div class="input-group" style="position: relative;">
+                              <form action="" id="searchBarCode" style="width: 100%;">
+                                  <input type="text" id="skuCode" name="skuCode" class="form-control" placeholder="Search product by name or ID" aria-label="Search product" aria-describedby="basic-addon2" autocomplete="off">
+                                  <input type="submit" style="display:none;">
+                              </form>
+                              <span class="input-group-addon" id="basic-addon2">
+                                  <i class="glyphicon glyphicon-ok"></i>
+                              </span>
+                              <div id="searchResults" style="position: absolute; top: 100%; left: 0; right: 40px; background: white; border: 1px solid #ddd; max-height: 300px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+                          </div>
                       </div>
                   </div>
                   <div>
@@ -280,10 +319,16 @@
                          <div class="col-md-3">Price :</div>
                          <div class="col-md-3">: <span id="price">0.0</span></div>
                      </div>
-                     <div class="row">
+                     <div class="row m-t-10">
                          <div class="col-md-3">Discount</div>
-                         <div class="col-md-3"><input class="form-control" type="number" id="inputDiscount" oninput="$(this).calculateCart();"></div>
-                         <div class="col-md-3">Gross Price (inc <span id="taxInfo"></span>% Tax)</div>
+                         <div class="col-md-3"><input class="form-control" type="number" id="inputDiscount" oninput="$(this).calculateCart();" placeholder="0"></div>
+                         <div class="col-md-3">Tax (%)</div>
+                         <div class="col-md-3"><input class="form-control" type="number" id="inputTax" oninput="$(this).calculateCart();" placeholder="0" step="0.01"></div>
+                     </div>
+                     <div class="row m-t-10">
+                         <div class="col-md-3"></div>
+                         <div class="col-md-3"></div>
+                         <div class="col-md-3">Gross Price (inc Tax)</div>
                          <div class="col-md-3"><h3 id="gross_price">0.00</h3></div>
                      </div>
   
@@ -300,32 +345,6 @@
                       </button>
                   </div>
                   <hr>
-  
-              </div>
-          </div>
-          <div class="col-md-8">
-              <div class="card-box">
-                  <div class="row">
-                      <div class="col-md-8">
-                          <input type="text" id="search" class="form-control" placeholder="Search product by name or sku" style="margin-bottom: 15px;">
-                      </div>
-                      <div class="col-md-4">
-                          <select id="filter_institute" class="form-control" style="margin-bottom: 15px;">
-                              <option value="0">All Institutes</option>
-                          </select>
-                      </div>
-                  </div>
-                  <div class="row">
-                      <div class="col-md-12">
-                          <div id="categories">
-                              
-                          </div>
-                      </div>
-                  </div>
-                  <hr>
-                  <div class="row" id="parent"> 
-                      
-                  </div>
   
               </div>
           </div>
@@ -1038,7 +1057,7 @@ require('./renderer.js');
      </script>
 
   <!-- Footer -->
-  <footer style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); padding: 20px 0; margin-top: 40px; margin-bottom: 0; box-shadow: 0 -2px 8px rgba(0,0,0,0.1);">
+  <footer style="background: linear-gradient(135deg, #2c3e50 0%, #17411c 100%); padding: 20px 0; margin-top: 0; margin-bottom: 0; box-shadow: 0 -2px 8px rgba(0,0,0,0.1);">
     <div class="container">
       <div class="row">
         <div class="col-sm-12" style="text-align: center;">
