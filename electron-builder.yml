@@ -1,0 +1,51 @@
+appId: com.creativehands.pos
+productName: Creative Hands POS
+copyright: Copyright © 2025 Creative Hands By TEVTA
+
+directories:
+  buildResources: assets
+  output: dist
+
+asar: false
+
+files:
+  - "**/*"
+  - "!**/node_modules/**"
+  - "node_modules/**"
+  - "!release-builds/**"
+  - "!dist/**"
+  - "!installers/**"
+  - "!screenshots/**"
+  - "!.git/**"
+  - "!.vscode/**"
+
+extraResources:
+  - from: db
+    to: db
+    filter:
+      - "**/*"
+
+win:
+  target:
+    - target: portable
+      arch:
+        - x64
+  icon: assets/images/icon.ico
+  artifactName: "${productName}-${version}-Portable.${ext}"
+
+portable:
+  artifactName: "${productName}-Portable.exe"
+  unpackDirName: "CreativeHandsPOS"
+
+mac:
+  target:
+    - dmg
+    - zip
+  icon: assets/images/icon.icns
+  category: public.app-category.business
+
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Office
