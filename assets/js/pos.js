@@ -3151,6 +3151,11 @@ function loadTransactions() {
             dom: "Bfrtip",
             buttons: ["csv", "excel", "pdf"],
           });
+
+          // Invoice search
+          $('#invoiceSearch').on('keyup', function() {
+            $("#transactionList").DataTable().column(0).search(this.value).draw();
+          });
         }
       });
     } else {
@@ -3401,16 +3406,13 @@ function viewTransaction(index) {
                   settings.store
                 }</h2>
                 <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">${
-                  settings.address_one
+                  settings.address_one || ""
                 }</p>
                 <p style="margin: 0; font-size: 12px; color: #666;">${
-                  settings.address_two
+                  settings.address_two || ""
                 }</p>
                 <p style="margin: 0; font-size: 12px; color: #666;">${
                   settings.contact ? "Tel: " + settings.contact : ""
-                }</p>
-                <p style="margin: 0; font-size: 12px; color: #666;">${
-                  settings.tax ? "Tax ID: " + settings.tax : ""
                 }</p>
             </div>
             <h1 style="margin: 0; font-size: 42px; color: #000; font-weight: 700; text-align: center;">INVOICE</h1>
