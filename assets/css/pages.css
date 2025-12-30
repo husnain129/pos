@@ -11,8 +11,6 @@
 #transactions_view {
   display: none;
   flex: 1;
-  overflow-y: auto;
-  max-height: calc(100vh - 160px);
 }
 
 #pointofsale {
@@ -35,8 +33,6 @@ html {
 
 .container {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 /* .container:has(.login-body) {
@@ -46,9 +42,6 @@ html {
 } */
 
 #pos_view {
-  height: 100%;
-  overflow-y: auto;
-}
 
 #products_view {
   padding-bottom: 20px;

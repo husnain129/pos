@@ -131,25 +131,13 @@
             <div class="col-md-12">
                 <div class="card-box"> 
                     <div class="row">               
-                        <h3 class="col-md-2">Transactions</h3> 
-                        <div class="col-md-1">
-                            <span>Till</span>
-                            <select id="tills" class="form-control">                              
-                            </select>
-                        </div>
-                        <div class="col-md-2">
+                        <h3 class="col-md-3">Transactions</h3> 
+                        <div class="col-md-3">
                             <span>Cashier</span>
                             <select id="users" class="form-control">
                             </select>
                         </div>
-                        <div class="col-md-1">
-                            <span>Status</span>
-                            <select id="status" class="form-control status">
-                                <option value="1">Paid</option>
-                                <option value="0">Unpaid</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <span style="width: 100%;">Date</span>
                             <div id="reportrange">
                                 <i class="fa fa-calendar"></i>&nbsp;
@@ -159,74 +147,24 @@
                     </div>   
                         <hr>
                         <div class="row">
-                           
-
-                            <div class="col-md-5">
-                                <div class="row">
-                                    <div class="col-md-8" id="productSales">
-                                            <h4>Products</h4>
-                                            <hr>
-                                            <table class="table tablesaw-enhanced" id="productsSold">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Institute</th>
-                                                        <th>Category</th>
-                                                        <th>Product Name</th>
-                                                        <th>Sold</th>
-                                                        <th>Available</th> 
-                                                        <th>Sales</th>                                                                                                           
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="product_sales"></tbody>
-                                            </table>
-                                    </div>
-                                    <div class="col-md-4" id="totals">
-                                            <h4>Total</h4>
-                                            <hr>
-                                    
-                                            <div id="total_sales" class="btn-success">
-                                                <h5>SALES</h5>
-                                                <div id="counter">0</div>
-                                            </div>
-                                       
-                                            <div id="total_transactions" class="btn-warning">
-                                                <h5>TRANSACTIONS</h5>
-                                                <div id="counter">0</div>
-                                            </div>
-                                
-                                            <div id="total_items" class="btn-info">
-                                                <h5>ITEMS</h5>
-                                                <div id="counter">0</div>
-                                            </div>
-
-                                            <div id="total_products" class="btn-default">
-                                                <h5>PRODUCTS</h5>
-                                                <div id="counter">0</div>
-                                            </div>
-                                                                         
-                                    </div>
-                                   
-                               </div>
-                           </div>
-
-                           <div class="col-md-7">
-                            <table class="table table-striped" id="transactionList">
-                                <thead>
-                                    <tr>                                                                      
-                                        <th>Invoice</th>                                      
-                                        <th>Date</th>
-                                        <th>Total</th>
-                                        <th>Payable</th>
-                                        <th>Method</th>
-                                        <th>Cashier</th>
-                                        <th>View</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="transaction_list"></tbody>
-                            </table>
-                        </div>
-
-                      </div>                    
+                            <div class="col-md-12">
+                                <button id="viewSalesSummary" class="btn btn-info pull-right" style="margin-bottom: 15px;">View Sales Summary</button>
+                                <table class="table table-striped" id="transactionList">
+                                    <thead>
+                                        <tr>                                                                      
+                                            <th>Invoice</th>                                      
+                                            <th>Date</th>
+                                            <th>Total</th>
+                                            <th>Payable</th>
+                                            <th>Method</th>
+                                            <th>Cashier</th>
+                                            <th>View</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transaction_list"></tbody>
+                                </table>
+                            </div>
+                        </div>                    
                 </div>
             </div>
         </div>
@@ -1049,25 +987,61 @@
           </div>
      </div>
 
+     <div id="salesSummaryModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myLargeModalLabel">Sales Summary</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="salesSummaryContent">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h4>Products Sold</h4>
+                                <table class="table table-striped" id="modalProductsSold">
+                                    <thead>
+                                        <tr>
+                                            <th>Institute</th>
+                                            <th>Category</th>
+                                            <th>Product Name</th>
+                                            <th>Sold</th>
+                                            <th>Available</th>
+                                            <th>Sales</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="modal_product_sales"></tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-4">
+                                <h4>Totals</h4>
+                                <div id="modal_total_sales" class="btn-success" style="margin-bottom: 10px;">
+                                    <h5>SALES</h5>
+                                    <div id="modal_counter_sales">0</div>
+                                </div>
+                                <div id="modal_total_transactions" class="btn-warning" style="margin-bottom: 10px;">
+                                    <h5>TRANSACTIONS</h5>
+                                    <div id="modal_counter_transactions">0</div>
+                                </div>
+                                <div id="modal_total_items" class="btn-info" style="margin-bottom: 10px;">
+                                    <h5>ITEMS</h5>
+                                    <div id="modal_counter_items">0</div>
+                                </div>
+                                <div id="modal_total_products" class="btn-default">
+                                    <h5>PRODUCTS</h5>
+                                    <div id="modal_counter_products">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
   </div>
 
 </div>
-
-  <!-- Footer -->
-  <footer class="footer" style="background: linear-gradient(135deg, #2c3e50 0%, #17411c 100%); padding: 20px 0; margin-top: 0; margin-bottom: 0; box-shadow: 0 -2px 8px rgba(0,0,0,0.1);">
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-12" style="text-align: center;">
-          <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 500;">
-            Created by <strong>Mr. Zahid Ghaffar</strong> - Chief Instructor IT
-          </p>
-          <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.7); font-size: 12px;">
-            Creative Hands By TEVTA © 2025
-          </p>
-        </div>
-      </div>
-    </div>
-  </footer>
 
 <script> window.$ = window.jQuery = require('jquery'); </script>
 

@@ -57,8 +57,8 @@ let platform;
 let user = {};
 let start = moment().startOf("month");
 let end = moment();
-let start_date = moment(start).toDate();
-let end_date = moment(end).toDate();
+let start_date = moment(start).toISOString();
+let end_date = moment(end).toISOString();
 let by_till = 0;
 let by_user = 0;
 let by_status = 1;
@@ -3056,7 +3056,7 @@ function loadTransactions() {
 
   let counter = 0;
   let transaction_list = "";
-  let query = `transactions/by-date?start=${start_date}&end=${end_date}&user=${by_user}&status=${by_status}&till=${by_till}`;
+  let query = `transactions/by-date?start=${start_date}&end=${end_date}&user=${by_user}&till=${by_till}&status=1`;
 
   $.get(api + query, function (transactions) {
     if (transactions.length > 0) {
@@ -3105,10 +3105,7 @@ function loadTransactions() {
                     `;
 
         if (counter == transactions.length) {
-          $("#total_sales #counter").text(
-            settings.symbol + parseFloat(sales).toFixed(2)
-          );
-          $("#total_transactions #counter").text(transact);
+          // Removed: populate totals in removed section
 
           const result = {};
 
@@ -3138,9 +3135,8 @@ function loadTransactions() {
 
           loadSoldProducts();
 
-          if (by_user == 0 && by_till == 0) {
+          if (by_user == 0) {
             userFilter(users);
-            tillFilter(tills);
           }
 
           $("#transaction_list").html(transaction_list);
@@ -3226,9 +3222,7 @@ function loadSoldProducts() {
             </tr>`;
 
     if (counter == sold.length) {
-      $("#total_items #counter").text(items);
-      $("#total_products #counter").text(products);
-      $("#product_sales").html(sold_list);
+      // Removed: populate totals and product_sales in removed section
     }
   });
 }
@@ -3242,17 +3236,77 @@ function userFilter(users) {
       return usr._id == user;
     });
 
-    $("#users").append(`<option value="${user}">${u[0].fullname}</option>`);
+    if (u.length > 0) {
+      $("#users").append(`<option value="${user}">${u[0].fullname}</option>`);
+    }
   });
 }
 
-function tillFilter(tills) {
-  $("#tills").empty();
-  $("#tills").append(`<option value="0">All</option>`);
-  tills.forEach((till) => {
-    $("#tills").append(`<option value="${till}">${till}</option>`);
+function loadSoldProductsForModal() {
+  sold.sort(discend);
+
+  let counter = 0;
+  let sold_list = "";
+  let items = 0;
+  let products = 0;
+  let sales = 0;
+  let transact = allTransactions.length;
+
+  sold.forEach((item, index) => {
+    items += item.qty;
+    products++;
+    sales += item.qty * parseFloat(item.price);
+
+    let product = allProducts.filter(function (selected) {
+      return selected._id == item.id;
+    });
+
+    let category = allCategories.filter(function (cat) {
+      return product.length > 0 && cat._id == product[0].category;
+    });
+
+    let institute = [];
+    if (
+      typeof allInstitutes !== "undefined" &&
+      allInstitutes &&
+      allInstitutes.length > 0
+    ) {
+      institute = allInstitutes.filter(function (inst) {
+        return product.length > 0 && inst.id == product[0].institute_id;
+      });
+    }
+
+    counter++;
+
+    sold_list += `<tr>
+            <td>${institute.length > 0 ? institute[0].name : "N/A"}</td>
+            <td>${category.length > 0 ? category[0].name : "N/A"}</td>
+            <td>${item.product}</td>
+            <td>${item.qty}</td>
+            <td>${
+              product.length > 0 && product[0].stock == 1
+                ? product[0].quantity
+                : "N/A"
+            }</td>
+            <td>${
+              settings.symbol + (item.qty * parseFloat(item.price)).toFixed(2)
+            }</td>
+            </tr>`;
+
+    if (counter == sold.length) {
+      $("#modal_product_sales").html(sold_list);
+      $("#modal_counter_sales").text(settings.symbol + sales.toFixed(2));
+      $("#modal_counter_transactions").text(transact);
+      $("#modal_counter_items").text(items);
+      $("#modal_counter_products").text(products);
+    }
   });
 }
+
+$('#viewSalesSummary').click(function() {
+    loadSoldProductsForModal();
+    $('#salesSummaryModal').modal('show');
+});
 
 function viewTransaction(index) {
   transaction_index = index;
@@ -3488,8 +3542,8 @@ $("#reportrange").on("apply.daterangepicker", function (ev, picker) {
   start = picker.startDate.format("DD MMM YYYY hh:mm A");
   end = picker.endDate.format("DD MMM YYYY hh:mm A");
 
-  start_date = picker.startDate.toDate().toJSON();
-  end_date = picker.endDate.toDate().toJSON();
+  start_date = picker.startDate.toISOString();
+  end_date = picker.endDate.toISOString();
 
   loadTransactions();
 });
