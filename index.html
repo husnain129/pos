@@ -997,12 +997,43 @@
                 <div class="modal-body">
                     <div id="salesSummaryContent">
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-md-12">
+                                <h4>Totals</h4>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div id="modal_total_sales" class="btn-success" style="margin-bottom: 10px; padding: 10px;">
+                                            <h5>SALES</h5>
+                                            <div id="modal_counter_sales">0</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div id="modal_total_transactions" class="btn-warning" style="margin-bottom: 10px; padding: 10px;">
+                                            <h5>TRANSACTIONS</h5>
+                                            <div id="modal_counter_transactions">0</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div id="modal_total_items" class="btn-info" style="margin-bottom: 10px; padding: 10px;">
+                                            <h5>ITEMS</h5>
+                                            <div id="modal_counter_items">0</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div id="modal_total_products" class="btn-default" style="margin-bottom: 10px; padding: 10px;">
+                                            <h5>PRODUCTS</h5>
+                                            <div id="modal_counter_products">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-12">
                                 <h4>Products Sold</h4>
                                 <table class="table table-striped" id="modalProductsSold">
                                     <thead>
                                         <tr>
-                                            <th>Institute</th>
                                             <th>Category</th>
                                             <th>Product Name</th>
                                             <th>Sold</th>
@@ -1012,25 +1043,6 @@
                                     </thead>
                                     <tbody id="modal_product_sales"></tbody>
                                 </table>
-                            </div>
-                            <div class="col-md-4">
-                                <h4>Totals</h4>
-                                <div id="modal_total_sales" class="btn-success" style="margin-bottom: 10px;">
-                                    <h5>SALES</h5>
-                                    <div id="modal_counter_sales">0</div>
-                                </div>
-                                <div id="modal_total_transactions" class="btn-warning" style="margin-bottom: 10px;">
-                                    <h5>TRANSACTIONS</h5>
-                                    <div id="modal_counter_transactions">0</div>
-                                </div>
-                                <div id="modal_total_items" class="btn-info" style="margin-bottom: 10px;">
-                                    <h5>ITEMS</h5>
-                                    <div id="modal_counter_items">0</div>
-                                </div>
-                                <div id="modal_total_products" class="btn-default">
-                                    <h5>PRODUCTS</h5>
-                                    <div id="modal_counter_products">0</div>
-                                </div>
                             </div>
                         </div>
                     </div>

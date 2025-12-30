@@ -2106,6 +2106,7 @@ $(document).ready(function () {
     });
 
     $("#transactions").click(function () {
+      loadInstitutes();
       loadTransactions();
       loadUserList();
 
@@ -3279,7 +3280,6 @@ function loadSoldProductsForModal() {
     counter++;
 
     sold_list += `<tr>
-            <td>${institute.length > 0 ? institute[0].name : "N/A"}</td>
             <td>${category.length > 0 ? category[0].name : "N/A"}</td>
             <td>${item.product}</td>
             <td>${item.qty}</td>
@@ -3299,6 +3299,16 @@ function loadSoldProductsForModal() {
       $("#modal_counter_transactions").text(transact);
       $("#modal_counter_items").text(items);
       $("#modal_counter_products").text(products);
+
+      // Initialize DataTable for pagination
+      $("#modalProductsSold").DataTable({
+        paging: true,
+        info: false,
+        searching: false,
+        ordering: true,
+        pageLength: 10,
+        destroy: true // Allow re-initialization
+      });
     }
   });
 }
