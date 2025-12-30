@@ -9,7 +9,6 @@
     "appId": "com.creativehands.pos",
     "productName": "Creative Hands POS",
     "directories": {
-      "buildResources": "assets",
       "output": "dist"
     },
     "win": {
@@ -20,9 +19,7 @@
             "x64"
           ]
         }
-      ],
-      "icon": "assets/images/icon.ico",
-      "artifactName": "${productName}-${version}-Portable.${ext}"
+      ]
     },
     "portable": {
       "artifactName": "${productName}-Portable.exe"
@@ -82,8 +79,8 @@
     "dev": "cross-env NODE_ENV=dev nodemon --exec \"electron .\"",
     "build": "electron-builder --win portable",
     "build:portable": "electron-builder --win portable",
-    "build:mac": "electron-packager . \"Creative Hands POS\" --overwrite --asar=false --platform=darwin --arch=x64 --icon=assets/images/icon.icns --prune=true --out=release-builds --app-version=1.0.0",
-    "build:win": "electron-packager . \"Creative Hands POS\" --overwrite --asar=false --platform=win32 --arch=x64 --icon=assets/images/icon.ico --prune=true --out=release-builds --app-version=1.0.0 --win32metadata.CompanyName=\"Creative Hands By TEVTA\" --win32metadata.FileDescription=\"Point of Sale System\" --win32metadata.ProductName=\"Creative Hands POS\"",
+    "build:mac": "electron-packager . \"Creative Hands POS\" --overwrite --asar=false --platform=darwin --arch=x64 --prune=true --out=release-builds --app-version=1.0.0",
+    "build:win": "electron-packager . \"Creative Hands POS\" --overwrite --asar=false --platform=win32 --arch=x64 --prune=true --out=release-builds --app-version=1.0.0 --win32metadata.CompanyName=\"Creative Hands By TEVTA\" --win32metadata.FileDescription=\"Point of Sale System\" --win32metadata.ProductName=\"Creative Hands POS\"",
     "build:linux": "electron-packager . \"Creative Hands POS\" --overwrite --asar=false --platform=linux --arch=x64 --prune=true --out=release-builds --app-version=1.0.0"
   },
   "browserslist": {

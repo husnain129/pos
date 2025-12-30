@@ -1,6 +1,14 @@
-const setupEvents = require("./installers/setupEvents");
-if (setupEvents.handleSquirrelEvent()) {
-  return;
+// Setup events only for installer builds (not portable)
+try {
+  const setupEventsPath = "./installers/setupEvents";
+  if (require.resolve(setupEventsPath)) {
+    const setupEvents = require(setupEventsPath);
+    if (setupEvents.handleSquirrelEvent()) {
+      return;
+    }
+  }
+} catch (e) {
+  // setupEvents not available in portable build, continue normally
 }
 
 const server = require("./server");
