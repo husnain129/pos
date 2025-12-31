@@ -13,6 +13,7 @@
     <link href="assets/plugins/dataTables/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/plugins/dataTables/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css" />    
     <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/product-modern.css" rel="stylesheet" type="text/css" />
     </head>
   <body>
     
@@ -96,10 +97,6 @@
 
                             <button id="productsSelection" type="button" class="btn btn-default waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Browse and select products">
                                 <span class="btn-label"><i class="glyphicon glyphicon-th-large"></i> </span>  Products List
-                            </button>
-
-                            <button id="pointofsale" type="button" class="btn btn-default waves-effect waves-light" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Checkout and payment">
-                                <span class="btn-label"><i class=" 	glyphicon glyphicon-shopping-cart"></i> </span>  Checkout
                             </button>
 
 
@@ -551,10 +548,8 @@
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <form id="saveProduct" encType="multipart/form-data">
+                    <form id="saveProduct">
                         <input type="hidden" name="id" id="product_id">
-                        <input type="hidden" name="img" id="img">
-                        <input type="hidden" name="remove" id="remove_img">
                         <div class="form-group">
                             <label for="userName">Institute</label>
                             <select name="institute_id" class="form-control" id="product_institute">
@@ -579,11 +574,6 @@
                         </div>
                         <div class="form-group">
                             <label><input type="checkbox" name="stock" id="stock" style="max-width: 30px; float: left;">  Disable stock check </label>
-                        </div>
-                        <div class="form-group">
-                            <label for="userName"><span id="rmv_img" class="btn btn-xs btn-warning">Remove</span> Picture </label>                      
-                            <div id="current_img"></div>
-                            <input type="file" name="imagename" id="imagename">                            
                         </div>
   
                         <input type="submit" id="submitProduct" class="btn btn-primary btn-block waves-effect waves-light">
@@ -698,7 +688,6 @@
                             <thead>
                                 <tr>                                                                      
                                     <th>Barcode</th>
-                                    <th>Item</th>
                                     <th>Name</th>                                      
                                     <th>Price</th>
                                     <th>Stock</th>

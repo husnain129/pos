@@ -19,7 +19,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: screenDimensions.width,
     height: screenDimensions.height,
-    frame: false,
+    frame: true,
     minWidth: 1200,
     minHeight: 750,
     title: "Creative Hands - Point of Sale System",

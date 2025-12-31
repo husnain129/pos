@@ -3,56 +3,9 @@ const server = require("http").Server(app);
 const bodyParser = require("body-parser");
 const db = require("../db/config");
 const async = require("async");
-const fileUpload = require("express-fileupload");
-const multer = require("multer");
-const fs = require("fs");
-const path = require("path");
-
-// Get appropriate data directory based on platform
-function getDataDir() {
-  const isDev = process.env.NODE_ENV === "dev";
-
-  if (isDev) {
-    // Development mode - use project directory
-    return path.join(__dirname, "..", "public", "uploads");
-  }
-
-  // Production mode - use user data directory
-  if (process.platform === "darwin") {
-    // macOS
-    return path.join(
-      process.env.HOME,
-      "Library",
-      "Application Support",
-      "Creative Hands POS",
-      "uploads"
-    );
-  } else if (process.platform === "win32") {
-    // Windows
-    return path.join(process.env.APPDATA, "Creative Hands POS", "uploads");
-  } else {
-    // Linux
-    return path.join(process.env.HOME, ".creative-hands-pos", "uploads");
-  }
-}
-
-const uploadDir = getDataDir();
-
-// Create directory if it doesn't exist
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: uploadDir,
-  filename: function (req, file, callback) {
-    callback(null, Date.now() + ".jpg"); //
-  },
-});
-
-let upload = multer({ storage: storage });
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 module.exports = app;
 
@@ -68,7 +21,7 @@ app.get("/product/:productId", async function (req, res) {
       const result = await db.query(
         `SELECT p.id as _id, p.product_name as name, p.price, 
         COALESCE(c.id, 0) as category, p.quantity, p.product_specifications as stock, 
-        p.image_link as img, p.zone, p.district, p.institute_name, p.institute_id 
+        p.zone, p.district, p.institute_name, p.institute_id 
         FROM products p 
         LEFT JOIN categories c ON c.name = p.product_category 
         WHERE p.id = $1`,
@@ -86,7 +39,6 @@ app.get("/products", async function (req, res) {
     const result = await db.query(
       `SELECT p.id as _id, p.product_name as name, p.price, p.cost_price,
       COALESCE(c.id, 0) as category, p.quantity, p.product_specifications as stock, 
-      p.image, p.image_link, p.image_link as img, 
       p.zone, p.district, p.institute_name, p.institute_id 
       FROM products p 
       LEFT JOIN categories c ON c.name = p.product_category 
@@ -98,30 +50,7 @@ app.get("/products", async function (req, res) {
   }
 });
 
-app.post("/product", upload.single("imagename"), async function (req, res) {
-  let image = "";
-
-  if (req.body.img != "") {
-    image = req.body.img;
-  }
-
-  if (req.file) {
-    image = req.file.filename;
-  }
-
-  if (req.body.remove == 1) {
-    const path = "./resources/app/public/uploads/product_image/" + req.body.img;
-    try {
-      fs.unlinkSync(path);
-    } catch (err) {
-      console.error(err);
-    }
-
-    if (!req.file) {
-      image = "";
-    }
-  }
-
+app.post("/product", async function (req, res) {
   try {
     // Get category name from ID
     const categoryResult = await db.query(
@@ -134,8 +63,8 @@ app.post("/product", upload.single("imagename"), async function (req, res) {
     if (req.body.id == "") {
       // Insert new product
       const result = await db.query(
-        `INSERT INTO products (product_name, price, cost_price, product_category, quantity, product_specifications, image, image_link, institute_id, zone, district, institute_name) 
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id as _id, product_name as name, price, product_category as category, quantity, product_specifications as stock, image, image_link as img`,
+        `INSERT INTO products (product_name, price, cost_price, product_category, quantity, product_specifications, institute_id, zone, district, institute_name) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id as _id, product_name as name, price, product_category as category, quantity, product_specifications as stock`,
         [
           req.body.name,
           req.body.price,
@@ -143,8 +72,6 @@ app.post("/product", upload.single("imagename"), async function (req, res) {
           categoryName,
           req.body.quantity == "" ? 0 : req.body.quantity,
           req.body.stock == "on" ? 0 : 1,
-          req.file ? req.file.filename : "",
-          req.body.image_link || "",
           req.body.institute_id ? parseInt(req.body.institute_id) : null,
           req.body.zone || "",
           req.body.district || "",
@@ -155,7 +82,7 @@ app.post("/product", upload.single("imagename"), async function (req, res) {
     } else {
       // Update existing product
       await db.query(
-        `UPDATE products SET product_name = $1, price = $2, cost_price = $3, product_category = $4, quantity = $5, product_specifications = $6, image = $7, image_link = $8, institute_id = $9, zone = $10, district = $11, institute_name = $12, updated_at = CURRENT_TIMESTAMP WHERE id = $13`,
+        `UPDATE products SET product_name = $1, price = $2, cost_price = $3, product_category = $4, quantity = $5, product_specifications = $6, institute_id = $7, zone = $8, district = $9, institute_name = $10, updated_at = CURRENT_TIMESTAMP WHERE id = $11`,
         [
           req.body.name,
           req.body.price,
@@ -163,8 +90,6 @@ app.post("/product", upload.single("imagename"), async function (req, res) {
           categoryName,
           req.body.quantity == "" ? 0 : req.body.quantity,
           req.body.stock == "on" ? 0 : 1,
-          req.file ? req.file.filename : req.body.image || "",
-          req.body.image_link || "",
           req.body.institute_id ? parseInt(req.body.institute_id) : null,
           req.body.zone || "",
           req.body.district || "",
@@ -205,8 +130,7 @@ app.post("/product/sku", async function (req, res) {
 
     const result = await db.query(
       `SELECT p.id as _id, p.product_name as name, p.price, 
-      COALESCE(c.id, 0) as category, p.quantity, p.product_specifications as stock, 
-      p.image_link as img 
+      COALESCE(c.id, 0) as category, p.quantity, p.product_specifications as stock 
       FROM products p 
       LEFT JOIN categories c ON c.name = p.product_category 
       WHERE p.id = $1`,

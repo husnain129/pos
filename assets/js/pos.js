@@ -314,6 +314,10 @@ $(document).ready(function () {
     loadInstitutes();
     loadCategories(function () {
       loadProducts();
+      // Also populate the products view after loading
+      setTimeout(function () {
+        loadProductsView();
+      }, 500);
     });
     loadCustomers();
 
@@ -403,36 +407,29 @@ $(document).ready(function () {
           // Handle missing SKU field
           const skuDisplay = item.sku || item._id || "";
 
-          // Determine image source
-          let imgSrc = "./assets/images/default.jpg";
-          if (item.image) {
-            // Use uploaded image from server
-            imgSrc = "http://localhost:8001/uploads/" + item.image;
-          } else if (item.image_link && item.image_link !== "") {
-            // Use external link if provided
-            imgSrc = item.image_link;
-          } else if (item.img && item.img !== "") {
-            // Fallback to old img field
-            imgSrc = img_path + item.img;
-          }
-
           let item_info = `<div class="box ${item.category}"
                                 onclick="$(this).addToCart(${item._id}, ${
             item.quantity
           }, ${item.stock})">
                             <div class="widget-panel widget-style-2 ">                    
-                            <div id="image"><img src="${imgSrc}" id="product_img" alt="" onerror="this.src='./assets/images/default.jpg'"></div>                    
                                         <div class="text-muted m-t-5 text-center">
-                                        <div class="name" id="product_name">${
+                                        <div class="name" id="product_name" style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px;">${
                                           item.name
                                         }</div> 
-                                        <span class="sku">${skuDisplay}</span>
-                                        <span class="stock">STOCK </span><span class="count">${
-                                          item.stock == 1
-                                            ? item.quantity
-                                            : "N/A"
-                                        }</span></div>
-                                         <sp class="text-success text-center"><b data-plugin="counterup">${
+                                        <span class="sku" style="font-size: 12px; color: #666;">ID: ${skuDisplay}</span>
+                                        <div style="margin-top: 10px;">
+                                          <span class="stock" style="font-size: 11px; color: #999;">STOCK: </span>
+                                          <span class="count" style="font-size: 13px; font-weight: 500; color: ${
+                                            item.stock == 1 &&
+                                            item.quantity <= 5
+                                              ? "#f56954"
+                                              : "#00a65a"
+                                          }">${
+            item.stock == 1 ? item.quantity : "N/A"
+          }</span>
+                                        </div>
+                                        </div>
+                                         <sp class="text-success text-center" style="display: block; margin-top: 12px; font-size: 18px;"><b data-plugin="counterup">${
                                            (settings && settings.symbol
                                              ? settings.symbol
                                              : "$") + item.price
@@ -586,30 +583,29 @@ $(document).ready(function () {
         }
 
         const skuDisplay = item.sku || item._id || "";
-        let imgSrc = "./assets/images/default.jpg";
-        if (item.image) {
-          imgSrc = "http://localhost:8001/uploads/" + item.image;
-        } else if (item.image_link && item.image_link !== "") {
-          imgSrc = item.image_link;
-        } else if (item.img && item.img !== "") {
-          imgSrc = img_path + item.img;
-        }
 
         let item_info = `<div class="box ${item.category}"
                               onclick="$(this).addToCart(${item._id}, ${
           item.quantity
         }, ${item.stock})">
                           <div class="widget-panel widget-style-2 ">                    
-                          <div id="image"><img src="${imgSrc}" id="product_img" alt="" onerror="this.src='./assets/images/default.jpg'"></div>                    
                                       <div class="text-muted m-t-5 text-center">
-                                      <div class="name" id="product_name">${
+                                      <div class="name" id="product_name" style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px;">${
                                         item.name
                                       }</div> 
-                                      <span class="sku">${skuDisplay}</span>
-                                      <span class="stock">STOCK </span><span class="count">${
-                                        item.stock == 1 ? item.quantity : "N/A"
-                                      }</span></div>
-                                       <sp class="text-success text-center"><b data-plugin="counterup">${
+                                      <span class="sku" style="font-size: 12px; color: #666;">ID: ${skuDisplay}</span>
+                                      <div style="margin-top: 10px;">
+                                        <span class="stock" style="font-size: 11px; color: #999;">STOCK: </span>
+                                        <span class="count" style="font-size: 13px; font-weight: 500; color: ${
+                                          item.stock == 1 && item.quantity <= 5
+                                            ? "#f56954"
+                                            : "#00a65a"
+                                        }">${
+          item.stock == 1 ? item.quantity : "N/A"
+        }</span>
+                                      </div>
+                                      </div>
+                                       <sp class="text-success text-center" style="display: block; margin-top: 12px; font-size: 18px;"><b data-plugin="counterup">${
                                          (settings && settings.symbol
                                            ? settings.symbol
                                            : "$") + item.price
@@ -2156,7 +2152,6 @@ $(document).ready(function () {
 
     $("#newProductModal").click(function () {
       $("#saveProduct").get(0).reset();
-      $("#current_img").text("");
 
       // Populate institute dropdown
       let instituteOptions =
@@ -2187,10 +2182,8 @@ $(document).ready(function () {
       $(this).attr("method", "POST");
 
       $(this).ajaxSubmit({
-        contentType: "application/json",
         success: function (response) {
           $("#saveProduct").get(0).reset();
-          $("#current_img").text("");
 
           // Reload categories first, then products
           loadCategories(function () {
@@ -2325,15 +2318,6 @@ $(document).ready(function () {
       $("#quantity").val(allProducts[index].quantity);
 
       $("#product_id").val(allProducts[index]._id);
-      $("#img").val(allProducts[index].img);
-
-      if (allProducts[index].img != "") {
-        $("#imagename").hide();
-        $("#current_img").html(
-          `<img src="${img_path + allProducts[index].img}" alt="">`
-        );
-        $("#rmv_img").show();
-      }
 
       if (allProducts[index].stock == 0) {
         $("#stock").prop("checked", true);
@@ -2572,7 +2556,11 @@ $(document).ready(function () {
       let counter = 0;
       let user_list = "";
       $("#user_list").empty();
-      $("#userList").DataTable().destroy();
+
+      // Check if DataTable exists before destroying
+      if ($.fn.DataTable.isDataTable("#userList")) {
+        $("#userList").DataTable().destroy();
+      }
 
       $.get(api + "users/all", function (users) {
         allUsers = [...users];
@@ -2636,7 +2624,11 @@ $(document).ready(function () {
       let product_list = "";
       let counter = 0;
       $("#product_list").empty();
-      $("#productList").DataTable().destroy();
+
+      // Check if DataTable exists before destroying
+      if ($.fn.DataTable.isDataTable("#productList")) {
+        $("#productList").DataTable().destroy();
+      }
 
       products.forEach((product, index) => {
         counter++;
@@ -2650,11 +2642,6 @@ $(document).ready(function () {
             <td><img id="` +
           product._id +
           `"></td>
-            <td><img style="max-height: 50px; max-width: 50px; border: 1px solid #ddd;" src="${
-              product.img == ""
-                ? "./assets/images/default.jpg"
-                : img_path + product.img
-            }" id="product_img"></td>
             <td>${product.name}</td>
             <td>${settings && settings.symbol ? settings.symbol : "$"}${
             product.price
@@ -2969,13 +2956,6 @@ $("#rmv_logo").click(function () {
   $("#current_logo").hide(500);
   $(this).hide(500);
   $("#logoname").show(500);
-});
-
-$("#rmv_img").click(function () {
-  $("#remove_img").val("1");
-  $("#current_img").hide(500);
-  $(this).hide(500);
-  $("#imagename").show(500);
 });
 
 $("#print_list").click(function () {
@@ -3307,15 +3287,15 @@ function loadSoldProductsForModal() {
         searching: false,
         ordering: true,
         pageLength: 10,
-        destroy: true // Allow re-initialization
+        destroy: true, // Allow re-initialization
       });
     }
   });
 }
 
-$('#viewSalesSummary').click(function() {
-    loadSoldProductsForModal();
-    $('#salesSummaryModal').modal('show');
+$("#viewSalesSummary").click(function () {
+  loadSoldProductsForModal();
+  $("#salesSummaryModal").modal("show");
 });
 
 function viewTransaction(index) {
