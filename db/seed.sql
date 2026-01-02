@@ -84,60 +84,60 @@ INSERT INTO categories (name, description, institute_id) VALUES
 
 -- GCTW Sahiwal Products
 INSERT INTO products (zone, district, institute_name, institute_id, product_category, product_name, product_specifications, product_code, category_id, price, cost_price, quantity, description, barcode, alert_quantity) VALUES
-    ('Central', 'Sahiwal', 'GCTW Sahiwal', 1, 'Garments & Fashion Design', 'Crochet Cardigan', 'Handmade crochet cardigan - Medium Size', 'GCTW-SAH-001', 1, 4000.00, 2800.00, 5, 'Beautiful handmade crochet cardigan', 'BAR-001', 2),
-    ('Central', 'Sahiwal', 'GCTW Sahiwal', 1, 'Garments & Fashion Design', 'Embroidered Shawl', 'Traditional embroidered shawl', 'GCTW-SAH-002', 1, 3500.00, 2200.00, 8, 'Elegant embroidered shawl', 'BAR-002', 3),
-    ('Central', 'Sahiwal', 'GCTW Sahiwal', 1, 'Garments & Fashion Design', 'Designer Dupatta', 'Premium designer dupatta', 'GCTW-SAH-003', 1, 2800.00, 1800.00, 12, 'Premium quality dupatta', 'BAR-003', 5);
+    ('Central', 'Sahiwal', 'GCTW Sahiwal', 1, 'Garments & Fashion Design', 'Crochet Cardigan', '1', 'GCTW-SAH-001', 1, 4000.00, 2800.00, 5, 'Beautiful handmade crochet cardigan', 'BAR-001', 2),
+    ('Central', 'Sahiwal', 'GCTW Sahiwal', 1, 'Garments & Fashion Design', 'Embroidered Shawl', '1', 'GCTW-SAH-002', 1, 3500.00, 2200.00, 8, 'Elegant embroidered shawl', 'BAR-002', 3),
+    ('Central', 'Sahiwal', 'GCTW Sahiwal', 1, 'Garments & Fashion Design', 'Designer Dupatta', '1', 'GCTW-SAH-003', 1, 2800.00, 1800.00, 12, 'Premium quality dupatta', 'BAR-003', 5);
 
 -- GSTC Dev Samaj Products
 INSERT INTO products (zone, district, institute_name, institute_id, product_category, product_name, product_specifications, product_code, category_id, price, cost_price, quantity, description, barcode, alert_quantity) VALUES
-    ('North', 'Lahore', 'GSTC Dev Samaj', 2, 'Handi craft', 'Hand Painted Lawn Dupatta', 'Hand painted lawn dupatta', 'GSTC-DS-001', 2, 1800.00, 1200.00, 5, 'Beautiful hand painted dupatta', 'BAR-004', 2),
-    ('North', 'Lahore', 'GSTC Dev Samaj', 2, 'Handi craft', 'Decorative Pots', 'Different sizes - Hand painted', 'GSTC-DS-002', 2, 3000.00, 2000.00, 7, 'Hand painted decorative pots', 'BAR-005', 3),
-    ('North', 'Lahore', 'GSTC Dev Samaj', 2, 'Home Textile', 'Dupatta Embroidery Painting', 'Embroidered and painted dupatta', 'GSTC-DS-003', 3, 800.00, 500.00, 8, 'Embroidery painting on dupatta', 'BAR-006', 4),
-    ('North', 'Lahore', 'GSTC Dev Samaj', 2, 'Handi craft', 'Ceramic Vase', 'Hand painted ceramic vase - Large', 'GSTC-DS-004', 2, 2500.00, 1600.00, 6, 'Beautiful ceramic vase', 'BAR-007', 2);
+    ('North', 'Lahore', 'GSTC Dev Samaj', 2, 'Handi craft', 'Hand Painted Lawn Dupatta', '1', 'GSTC-DS-001', 2, 1800.00, 1200.00, 5, 'Beautiful hand painted dupatta', 'BAR-004', 2),
+    ('North', 'Lahore', 'GSTC Dev Samaj', 2, 'Handi craft', 'Decorative Pots', '1', 'GSTC-DS-002', 2, 3000.00, 2000.00, 7, 'Hand painted decorative pots', 'BAR-005', 3),
+    ('North', 'Lahore', 'GSTC Dev Samaj', 2, 'Home Textile', 'Dupatta Embroidery Painting', '1', 'GSTC-DS-003', 3, 800.00, 500.00, 8, 'Embroidery painting on dupatta', 'BAR-006', 4),
+    ('North', 'Lahore', 'GSTC Dev Samaj', 2, 'Handi craft', 'Ceramic Vase', '1', 'GSTC-DS-004', 2, 2500.00, 1600.00, 6, 'Beautiful ceramic vase', 'BAR-007', 2);
 
 -- GVTIW Dev Samaj Products
 INSERT INTO products (zone, district, institute_name, institute_id, product_category, product_name, product_specifications, product_code, category_id, price, cost_price, quantity, description, barcode, alert_quantity) VALUES
-    ('North', 'Lahore', 'GVTIW Dev Samaj', 3, 'Home Textile', 'Bed Set', 'Complete bed set with pillows', 'GVTIW-DS-001', 4, 38000.00, 28000.00, 1, 'Premium bed set with embroidery', 'BAR-008', 1),
-    ('North', 'Lahore', 'GVTIW Dev Samaj', 3, 'Home Textile', 'Cushions Set', 'Set of decorative cushions', 'GVTIW-DS-002', 4, 7000.00, 5000.00, 3, 'Decorative cushion set', 'BAR-009', 2),
-    ('North', 'Lahore', 'GVTIW Dev Samaj', 3, 'Home Textile', 'Table Runner', 'Embroidered table runner', 'GVTIW-DS-003', 4, 2500.00, 1500.00, 5, 'Beautiful table runner', 'BAR-010', 2),
-    ('North', 'Lahore', 'GVTIW Dev Samaj', 3, 'Home Textile', 'Curtains Set', 'Pair of embroidered curtains', 'GVTIW-DS-004', 4, 15000.00, 10000.00, 2, 'Premium curtains with embroidery', 'BAR-011', 1);
+    ('North', 'Lahore', 'GVTIW Dev Samaj', 3, 'Home Textile', 'Bed Set', '1', 'GVTIW-DS-001', 4, 38000.00, 28000.00, 1, 'Premium bed set with embroidery', 'BAR-008', 1),
+    ('North', 'Lahore', 'GVTIW Dev Samaj', 3, 'Home Textile', 'Cushions Set', '1', 'GVTIW-DS-002', 4, 7000.00, 5000.00, 3, 'Decorative cushion set', 'BAR-009', 2),
+    ('North', 'Lahore', 'GVTIW Dev Samaj', 3, 'Home Textile', 'Table Runner', '1', 'GVTIW-DS-003', 4, 2500.00, 1500.00, 5, 'Beautiful table runner', 'BAR-010', 2),
+    ('North', 'Lahore', 'GVTIW Dev Samaj', 3, 'Home Textile', 'Curtains Set', '1', 'GVTIW-DS-004', 4, 15000.00, 10000.00, 2, 'Premium curtains with embroidery', 'BAR-011', 1);
 
 -- GVTI (W) Dev Samaj Road Products
 INSERT INTO products (zone, district, institute_name, institute_id, product_category, product_name, product_specifications, product_code, category_id, price, cost_price, quantity, description, barcode, alert_quantity) VALUES
-    ('North', 'Lahore', 'GVTI (W) Dev Samaj Road', 4, 'Islamic Art', 'Islamic Calligraphy with Oil Paint', 'Premium Size - Oil painting', 'GVTI-DSR-001', 5, 15000.00, 10000.00, 2, 'Beautiful Islamic calligraphy', 'BAR-012', 1),
-    ('North', 'Lahore', 'GVTI (W) Dev Samaj Road', 4, 'Islamic Art', 'Islamic Calligraphy with Oil Paint', 'Medium Size - Oil painting', 'GVTI-DSR-002', 5, 10000.00, 7000.00, 1, 'Islamic calligraphy art piece', 'BAR-013', 1),
-    ('North', 'Lahore', 'GVTI (W) Dev Samaj Road', 4, 'Wall Decor', 'Wall Hanging with Oil Paint', 'Large Size', 'GVTI-DSR-003', 6, 25000.00, 18000.00, 1, 'Large decorative wall hanging', 'BAR-014', 1),
-    ('North', 'Lahore', 'GVTI (W) Dev Samaj Road', 4, 'Wall Decor', 'Wall Hanging with Oil Paint', 'Medium Size', 'GVTI-DSR-004', 6, 20000.00, 14000.00, 1, 'Medium decorative wall hanging', 'BAR-015', 1);
+    ('North', 'Lahore', 'GVTI (W) Dev Samaj Road', 4, 'Islamic Art', 'Islamic Calligraphy with Oil Paint', '1', 'GVTI-DSR-001', 5, 15000.00, 10000.00, 2, 'Beautiful Islamic calligraphy', 'BAR-012', 1),
+    ('North', 'Lahore', 'GVTI (W) Dev Samaj Road', 4, 'Islamic Art', 'Islamic Calligraphy with Oil Paint', '1', 'GVTI-DSR-002', 5, 10000.00, 7000.00, 1, 'Islamic calligraphy art piece', 'BAR-013', 1),
+    ('North', 'Lahore', 'GVTI (W) Dev Samaj Road', 4, 'Wall Decor', 'Wall Hanging with Oil Paint', '1', 'GVTI-DSR-003', 6, 25000.00, 18000.00, 1, 'Large decorative wall hanging', 'BAR-014', 1),
+    ('North', 'Lahore', 'GVTI (W) Dev Samaj Road', 4, 'Wall Decor', 'Wall Hanging with Oil Paint', '1', 'GVTI-DSR-004', 6, 20000.00, 14000.00, 1, 'Medium decorative wall hanging', 'BAR-015', 1);
 
 -- GCTW Bahwalpur Products
 INSERT INTO products (zone, district, institute_name, institute_id, product_category, product_name, product_specifications, product_code, category_id, price, cost_price, quantity, description, barcode, alert_quantity) VALUES
-    ('South', 'Bahawalpur', 'GCTW Bahwalpur', 5, 'Hand Craft', 'Hand Painted Embellished Dupattas', 'Paper Cotton', 'GCTW-BW-001', 7, 2200.00, 1500.00, 2, 'Hand painted dupatta with embellishments', 'BAR-016', 1),
-    ('South', 'Bahawalpur', 'GCTW Bahwalpur', 5, 'Hand Craft', 'Hand Painted Embellished Dupattas', 'Organza', 'GCTW-BW-002', 7, 2500.00, 1700.00, 3, 'Organza dupatta with embellishments', 'BAR-017', 2),
-    ('South', 'Bahawalpur', 'GCTW Bahwalpur', 5, 'Hand Craft', 'Tie & Dye Dupata', 'China Silk', 'GCTW-BW-003', 7, 1800.00, 1200.00, 2, 'Traditional tie and dye dupatta', 'BAR-018', 1),
-    ('South', 'Bahawalpur', 'GCTW Bahwalpur', 5, 'Hand Craft', 'Tie & Dye Dupata', 'Crinkle boti', 'GCTW-BW-004', 7, 2500.00, 1700.00, 2, 'Crinkle boti tie and dye', 'BAR-019', 1),
-    ('South', 'Bahawalpur', 'GCTW Bahwalpur', 5, 'Hand Craft', 'Tie and Dye Dupatta', 'Chicken kari', 'GCTW-BW-005', 7, 1800.00, 1200.00, 3, 'Chicken kari tie and dye', 'BAR-020', 2),
-    ('South', 'Bahawalpur', 'GCTW Bahwalpur', 5, 'Hand Craft', 'Embellished Dupattas', 'Organza', 'GCTW-BW-006', 7, 2400.00, 1600.00, 2, 'Embellished organza dupatta', 'BAR-021', 1);
+    ('South', 'Bahawalpur', 'GCTW Bahwalpur', 5, 'Hand Craft', 'Hand Painted Embellished Dupattas', '1', 'GCTW-BW-001', 7, 2200.00, 1500.00, 2, 'Hand painted dupatta with embellishments', 'BAR-016', 1),
+    ('South', 'Bahawalpur', 'GCTW Bahwalpur', 5, 'Hand Craft', 'Hand Painted Embellished Dupattas', '1', 'GCTW-BW-002', 7, 2500.00, 1700.00, 3, 'Organza dupatta with embellishments', 'BAR-017', 2),
+    ('South', 'Bahawalpur', 'GCTW Bahwalpur', 5, 'Hand Craft', 'Tie & Dye Dupata', '1', 'GCTW-BW-003', 7, 1800.00, 1200.00, 2, 'Traditional tie and dye dupatta', 'BAR-018', 1),
+    ('South', 'Bahawalpur', 'GCTW Bahwalpur', 5, 'Hand Craft', 'Tie & Dye Dupata', '1', 'GCTW-BW-004', 7, 2500.00, 1700.00, 2, 'Crinkle boti tie and dye', 'BAR-019', 1),
+    ('South', 'Bahawalpur', 'GCTW Bahwalpur', 5, 'Hand Craft', 'Tie and Dye Dupatta', '1', 'GCTW-BW-005', 7, 1800.00, 1200.00, 3, 'Chicken kari tie and dye', 'BAR-020', 2),
+    ('South', 'Bahawalpur', 'GCTW Bahwalpur', 5, 'Hand Craft', 'Embellished Dupattas', '1', 'GCTW-BW-006', 7, 2400.00, 1600.00, 2, 'Embellished organza dupatta', 'BAR-021', 1);
 
 -- GCTW Multan Products
 INSERT INTO products (zone, district, institute_name, institute_id, product_category, product_name, product_specifications, product_code, category_id, price, cost_price, quantity, description, barcode, alert_quantity) VALUES
-    ('South', 'Multan', 'GCTW Multan', 6, 'Blue Pottery', 'Blue Pottery Vase', 'Traditional Multani design - Large', 'GCTW-MLT-001', 8, 4500.00, 3000.00, 4, 'Traditional blue pottery vase', 'BAR-022', 2),
-    ('South', 'Multan', 'GCTW Multan', 6, 'Blue Pottery', 'Blue Pottery Bowl Set', 'Set of 6 bowls', 'GCTW-MLT-002', 8, 3800.00, 2500.00, 3, 'Decorative bowl set', 'BAR-023', 2),
-    ('South', 'Multan', 'GCTW Multan', 6, 'Embroidery', 'Embroidered Cushion Covers', 'Set of 4 - Traditional design', 'GCTW-MLT-003', 9, 3200.00, 2200.00, 6, 'Traditional embroidered cushions', 'BAR-024', 3),
-    ('South', 'Multan', 'GCTW Multan', 6, 'Blue Pottery', 'Blue Pottery Plate', 'Decorative wall plate', 'GCTW-MLT-004', 8, 2800.00, 1800.00, 5, 'Decorative wall plate', 'BAR-025', 2);
+    ('South', 'Multan', 'GCTW Multan', 6, 'Blue Pottery', 'Blue Pottery Vase', '1', 'GCTW-MLT-001', 8, 4500.00, 3000.00, 4, 'Traditional blue pottery vase', 'BAR-022', 2),
+    ('South', 'Multan', 'GCTW Multan', 6, 'Blue Pottery', 'Blue Pottery Bowl Set', '1', 'GCTW-MLT-002', 8, 3800.00, 2500.00, 3, 'Decorative bowl set', 'BAR-023', 2),
+    ('South', 'Multan', 'GCTW Multan', 6, 'Embroidery', 'Embroidered Cushion Covers', '1', 'GCTW-MLT-003', 9, 3200.00, 2200.00, 6, 'Traditional embroidered cushions', 'BAR-024', 3),
+    ('South', 'Multan', 'GCTW Multan', 6, 'Blue Pottery', 'Blue Pottery Plate', '1', 'GCTW-MLT-004', 8, 2800.00, 1800.00, 5, 'Decorative wall plate', 'BAR-025', 2);
 
 -- GVTI Faisalabad Products
 INSERT INTO products (zone, district, institute_name, institute_id, product_category, product_name, product_specifications, product_code, category_id, price, cost_price, quantity, description, barcode, alert_quantity) VALUES
-    ('Central', 'Faisalabad', 'GVTI Faisalabad', 7, 'Furniture', 'Handcrafted Coffee Table', 'Sheesham wood - Medium size', 'GVTI-FSD-001', 10, 18000.00, 12000.00, 2, 'Beautiful handcrafted coffee table', 'BAR-026', 1),
-    ('Central', 'Faisalabad', 'GVTI Faisalabad', 7, 'Furniture', 'Wooden Wall Shelf', 'Decorative wall mounted shelf', 'GVTI-FSD-002', 10, 6500.00, 4500.00, 4, 'Handcrafted wall shelf', 'BAR-027', 2),
-    ('Central', 'Faisalabad', 'GVTI Faisalabad', 7, 'Leather Goods', 'Leather Handbag', 'Genuine leather - Medium size', 'GVTI-FSD-003', 11, 5500.00, 3800.00, 5, 'Handcrafted leather handbag', 'BAR-028', 2),
-    ('Central', 'Faisalabad', 'GVTI Faisalabad', 7, 'Leather Goods', 'Leather Wallet', 'Genuine leather - Bifold', 'GVTI-FSD-004', 11, 2200.00, 1500.00, 10, 'Premium leather wallet', 'BAR-029', 4);
+    ('Central', 'Faisalabad', 'GVTI Faisalabad', 7, 'Furniture', 'Handcrafted Coffee Table', '1', 'GVTI-FSD-001', 10, 18000.00, 12000.00, 2, 'Beautiful handcrafted coffee table', 'BAR-026', 1),
+    ('Central', 'Faisalabad', 'GVTI Faisalabad', 7, 'Furniture', 'Wooden Wall Shelf', '1', 'GVTI-FSD-002', 10, 6500.00, 4500.00, 4, 'Handcrafted wall shelf', 'BAR-027', 2),
+    ('Central', 'Faisalabad', 'GVTI Faisalabad', 7, 'Leather Goods', 'Leather Handbag', '1', 'GVTI-FSD-003', 11, 5500.00, 3800.00, 5, 'Handcrafted leather handbag', 'BAR-028', 2),
+    ('Central', 'Faisalabad', 'GVTI Faisalabad', 7, 'Leather Goods', 'Leather Wallet', '1', 'GVTI-FSD-004', 11, 2200.00, 1500.00, 10, 'Premium leather wallet', 'BAR-029', 4);
 
 -- GCTW Rawalpindi Products
 INSERT INTO products (zone, district, institute_name, institute_id, product_category, product_name, product_specifications, product_code, category_id, price, cost_price, quantity, description, barcode, alert_quantity) VALUES
-    ('North', 'Rawalpindi', 'GCTW Rawalpindi', 8, 'Metal Craft', 'Brass Decorative Bowl', 'Hand engraved - Large', 'GCTW-RWP-001', 12, 4200.00, 2800.00, 3, 'Beautiful brass bowl', 'BAR-030', 2),
-    ('North', 'Rawalpindi', 'GCTW Rawalpindi', 8, 'Metal Craft', 'Copper Tea Set', '6 piece tea set', 'GCTW-RWP-002', 12, 8500.00, 6000.00, 2, 'Traditional copper tea set', 'BAR-031', 1),
-    ('North', 'Rawalpindi', 'GCTW Rawalpindi', 8, 'Jewelry', 'Silver Earrings', 'Handcrafted silver with stones', 'GCTW-RWP-003', 13, 3500.00, 2500.00, 8, 'Beautiful silver earrings', 'BAR-032', 3),
-    ('North', 'Rawalpindi', 'GCTW Rawalpindi', 8, 'Jewelry', 'Silver Necklace Set', 'Necklace with matching earrings', 'GCTW-RWP-004', 13, 12000.00, 8500.00, 4, 'Premium silver jewelry set', 'BAR-033', 2);
+    ('North', 'Rawalpindi', 'GCTW Rawalpindi', 8, 'Metal Craft', 'Brass Decorative Bowl', '1', 'GCTW-RWP-001', 12, 4200.00, 2800.00, 3, 'Beautiful brass bowl', 'BAR-030', 2),
+    ('North', 'Rawalpindi', 'GCTW Rawalpindi', 8, 'Metal Craft', 'Copper Tea Set', '1', 'GCTW-RWP-002', 12, 8500.00, 6000.00, 2, 'Traditional copper tea set', 'BAR-031', 1),
+    ('North', 'Rawalpindi', 'GCTW Rawalpindi', 8, 'Jewelry', 'Silver Earrings', '1', 'GCTW-RWP-003', 13, 3500.00, 2500.00, 8, 'Beautiful silver earrings', 'BAR-032', 3),
+    ('North', 'Rawalpindi', 'GCTW Rawalpindi', 8, 'Jewelry', 'Silver Necklace Set', '1', 'GCTW-RWP-004', 13, 12000.00, 8500.00, 4, 'Premium silver jewelry set', 'BAR-033', 2);
 
 -- =====================================================
 -- CUSTOMERS

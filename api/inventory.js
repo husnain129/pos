@@ -20,10 +20,9 @@ app.get("/product/:productId", async function (req, res) {
     try {
       const result = await db.query(
         `SELECT p.id as _id, p.product_name as name, p.price, 
-        COALESCE(c.id, 0) as category, p.quantity, p.product_specifications as stock, 
+        COALESCE(p.category_id, 0) as category, p.quantity, p.product_specifications as stock, 
         p.zone, p.district, p.institute_name, p.institute_id 
         FROM products p 
-        LEFT JOIN categories c ON c.name = p.product_category 
         WHERE p.id = $1`,
         [parseInt(req.params.productId)]
       );
@@ -38,10 +37,9 @@ app.get("/products", async function (req, res) {
   try {
     const result = await db.query(
       `SELECT p.id as _id, p.product_name as name, p.price, p.cost_price,
-      COALESCE(c.id, 0) as category, p.quantity, p.product_specifications as stock, 
+      COALESCE(p.category_id, 0) as category, p.quantity, p.product_specifications as stock, 
       p.zone, p.district, p.institute_name, p.institute_id 
       FROM products p 
-      LEFT JOIN categories c ON c.name = p.product_category 
       ORDER BY p.id`
     );
     res.send(result.rows);

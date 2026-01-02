@@ -540,44 +540,60 @@
 
 
   <div id="newProduct" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
-        <div class="modal-dialog modal-md">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="mySmallModalLabel">Product
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px 8px 0 0;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: white; opacity: 0.9;">×</button>
+                    <h4 class="modal-title" id="mySmallModalLabel" style="color: white;"><i class="glyphicon glyphicon-barcode"></i> Product Management
                         <img  class="loading m-t-5" style="margin-left: 35%" height="50px" src="assets/images/loading.gif" alt="">
                     </h4>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="padding: 30px; background-color: #f8f9fa;">
                     <form id="saveProduct">
                         <input type="hidden" name="id" id="product_id">
-                        <div class="form-group">
-                            <label for="userName">Institute</label>
-                            <select name="institute_id" class="form-control" id="product_institute">
-                                <option value="">Select Institute (Optional)</option>
-                            </select>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="userName" style="font-weight: 600; color: #495057;"><i class="fa fa-building"></i> Institute</label>
+                                    <select name="institute_id" class="form-control" id="product_institute" style="border-radius: 6px; border: 2px solid #e0e0e0; padding: 10px;">
+                                        <option value="">Select Institute (Optional)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="userName" style="font-weight: 600; color: #495057;"><i class="fa fa-tags"></i> Category</label>
+                                    <select name="category" class="form-control" id="category" style="border-radius: 6px; border: 2px solid #e0e0e0; padding: 10px;"></select>
+                                </div>
+                            </div>
                         </div>
+                        
                         <div class="form-group">
-                            <label for="userName">Category</label>
-                            <select name="category" class="form-control" id="category"></select>
+                            <label for="userName" style="font-weight: 600; color: #495057;"><i class="fa fa-cube"></i> Product Name</label>
+                            <input type="text" required="required"  name="name" parsley-trigger="change" placeholder="Enter a product name" class="form-control" id="productName" style="border-radius: 6px; border: 2px solid #e0e0e0; padding: 10px;">
                         </div>
-                        <div class="form-group">
-                            <label for="userName">Product Name</label>
-                            <input type="text" required="required"  name="name" parsley-trigger="change" placeholder="Enter a product name" class="form-control" id="productName">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="userName" style="font-weight: 600; color: #495057;"><i class="fa fa-money"></i> Price</label>
+                                    <input type="text" required="required" name="price" placeholder="Price" class="form-control" id="product_price" style="border-radius: 6px; border: 2px solid #e0e0e0; padding: 10px;">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="userName" style="font-weight: 600; color: #495057;"><i class="fa fa-cubes"></i> Stock</label>
+                                    <input type="text" name="quantity" placeholder="Available stock" class="form-control" id="quantity" style="border-radius: 6px; border: 2px solid #e0e0e0; padding: 10px;">
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="userName">Price</label>
-                            <input type="text" required="required" name="price" placeholder="Price" class="form-control" id="product_price">
-                        </div>
-                        <div class="form-group">
-                            <label for="userName">Stock</label>
-                            <input type="text" name="quantity" placeholder="Available stock" class="form-control" id="quantity">
-                        </div>
-                        <div class="form-group">
-                            <label><input type="checkbox" name="stock" id="stock" style="max-width: 30px; float: left;">  Disable stock check </label>
+                        
+                        <div class="form-group" style="background: #fff3cd; padding: 12px; border-radius: 6px; border-left: 4px solid #ffc107;">
+                            <label style="margin-bottom: 0; color: #856404;"><input type="checkbox" name="stock" id="stock" style="margin-right: 8px;"> Disable stock check</label>
                         </div>
   
-                        <input type="submit" id="submitProduct" class="btn btn-primary btn-block waves-effect waves-light">
+                        <input type="submit" id="submitProduct" class="btn btn-success btn-block waves-effect waves-light" style="padding: 12px; font-size: 16px; font-weight: 600; border-radius: 6px; margin-top: 20px;">
                     </form>
                 </div>
             </div>
@@ -586,7 +602,7 @@
 
 
     <div id="newCategory" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
-            <div class="modal-dialog modal-md">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -688,7 +704,6 @@
                         <table class="table table-bordered" id="productList">
                             <thead>
                                 <tr>                                                                      
-                                    <th>Barcode</th>
                                     <th>Name</th>                                      
                                     <th>Price</th>
                                     <th>Stock</th>
@@ -741,7 +756,7 @@
 
 
      <div id="Categories" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
-            <div class="modal-dialog modal-md">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
