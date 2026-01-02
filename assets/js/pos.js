@@ -780,18 +780,57 @@ $(document).ready(function () {
     $("#skuCode").on("input", function () {
       let searchValue = $(this).val().trim().toLowerCase();
 
-      if (searchValue.length < 2) {
+      if (searchValue.length < 1) {
         $("#searchResults").hide().empty();
         return;
       }
 
+      // Get products to search from (filtered by institute if selected)
+      let productsToSearch = allProducts;
+      if (filterInstituteId > 0) {
+        productsToSearch = allProducts.filter(
+          (product) => product.institute_id == filterInstituteId
+        );
+      }
+
       // Filter products that match the search term
-      let matchingProducts = allProducts.filter(function (product) {
+      let matchingProducts = productsToSearch.filter(function (product) {
         let productName = product.name.toLowerCase();
         let productId = product._id.toString();
         return (
           productName.includes(searchValue) || productId.includes(searchValue)
         );
+      });
+
+      // Sort results: exact ID matches first, then exact name matches, then partial matches
+      matchingProducts.sort(function (a, b) {
+        let aId = a._id.toString();
+        let bId = b._id.toString();
+        let aName = a.name.toLowerCase();
+        let bName = b.name.toLowerCase();
+
+        // Exact ID match gets highest priority
+        if (aId === searchValue && bId !== searchValue) return -1;
+        if (bId === searchValue && aId !== searchValue) return 1;
+
+        // ID starts with search value
+        if (aId.startsWith(searchValue) && !bId.startsWith(searchValue))
+          return -1;
+        if (bId.startsWith(searchValue) && !aId.startsWith(searchValue))
+          return 1;
+
+        // Exact name match
+        if (aName === searchValue && bName !== searchValue) return -1;
+        if (bName === searchValue && aName !== searchValue) return 1;
+
+        // Name starts with search value
+        if (aName.startsWith(searchValue) && !bName.startsWith(searchValue))
+          return -1;
+        if (bName.startsWith(searchValue) && !aName.startsWith(searchValue))
+          return 1;
+
+        // Default sort by ID
+        return a._id - b._id;
       });
 
       if (matchingProducts.length > 0) {
