@@ -2606,13 +2606,13 @@ $(document).ready(function () {
       let user_list = "";
       $("#user_list").empty();
 
-      // Check if DataTable exists before destroying
-      if ($.fn.DataTable.isDataTable("#userList")) {
-        $("#userList").DataTable().destroy();
-      }
-
       $.get(api + "users/all", function (users) {
         allUsers = [...users];
+
+        // Check if DataTable exists before destroying
+        if ($.fn.DataTable.isDataTable("#userList")) {
+          $("#userList").DataTable().destroy();
+        }
 
         users.forEach((user, index) => {
           state = [];
@@ -2721,9 +2721,24 @@ $(document).ready(function () {
       allCategories.forEach((category, index) => {
         counter++;
 
+        // Find institute name
+        let instituteName = "N/A";
+        if (
+          category.institute_id &&
+          typeof allInstitutes !== "undefined" &&
+          allInstitutes
+        ) {
+          const institute = allInstitutes.find(
+            (inst) => inst.id === category.institute_id
+          );
+          if (institute) {
+            instituteName = institute.name;
+          }
+        }
+
         category_list += `<tr>
-     
             <td>${category.name}</td>
+            <td>${instituteName}</td>
             <td><span class="btn-group"><button onClick="$(this).editCategory(${index})" class="btn btn-warning"><i class="fa fa-edit"></i></button><button onClick="$(this).deleteCategory(${category._id})" class="btn btn-danger"><i class="fa fa-trash"></i></button></span></td></tr>`;
       });
 
