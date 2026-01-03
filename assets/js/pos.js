@@ -286,20 +286,17 @@ $(document).ready(function () {
       $("body").addClass("login-screen");
       $("html").addClass("login-screen");
 
-      // Force remove any padding/margin that might interfere
-      $("body").css({
-        "padding-top": "0",
-        "padding-bottom": "0",
-        margin: "0",
-        overflow: "hidden",
-        height: "100vh",
-      });
-      $("html").css({
-        padding: "0",
-        margin: "0",
-        overflow: "hidden",
-        height: "100vh",
-      });
+      // Force remove any padding/margin that might interfere with !important
+      $("body")[0].style.setProperty("padding-top", "0", "important");
+      $("body")[0].style.setProperty("padding-bottom", "0", "important");
+      $("body")[0].style.setProperty("margin", "0", "important");
+      $("body")[0].style.setProperty("overflow", "hidden", "important");
+      $("body")[0].style.setProperty("height", "100vh", "important");
+
+      $("html")[0].style.setProperty("padding", "0", "important");
+      $("html")[0].style.setProperty("margin", "0", "important");
+      $("html")[0].style.setProperty("overflow", "hidden", "important");
+      $("html")[0].style.setProperty("height", "100vh", "important");
 
       // Ensure loading div exists and is positioned correctly
       if ($("#loading").length === 0) {
@@ -3653,7 +3650,7 @@ function authenticate() {
       <div class="login-body">
         <!-- Login Header -->
         <div class="login-header">
-          <img src="assets/images/logo.jpeg" alt="Creative Hands Logo" class="login-logo" onerror="this.style.display='none'">
+          <img src="assets/images/logo.jpeg" alt="Creative Hands Logo" class="login-logo" style="max-height: 90px; max-width: 220px; height: auto; width: auto; object-fit: contain;" onerror="this.style.display='none'">
           <h2>Creative Hands</h2>
           <p>By TEVTA - Point of Sale System</p>
         </div>
@@ -3661,13 +3658,27 @@ function authenticate() {
         <form id="account" class="login-form">
           <h3>Login to Continue</h3>
           <div class="form-group">
-            <input type="text" placeholder="Username" name="username" class="form-control" required autofocus>
+            <div style="position: relative;">
+              <input type="text" placeholder="Username" name="username" class="form-control" required autofocus style="padding-left: 45px;">
+              <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #999; font-size: 18px; pointer-events: none;">
+                <i class="glyphicon glyphicon-user"></i>
+              </span>
+            </div>
+            <div class="error-message" id="username-error"></div>
           </div>
           <div class="form-group">
-            <input type="password" placeholder="Password" name="password" class="form-control" required>
+            <div style="position: relative;">
+              <input type="password" placeholder="Password" name="password" class="form-control" required style="padding-left: 45px;">
+              <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #999; font-size: 18px; pointer-events: none;">
+                <i class="glyphicon glyphicon-lock"></i>
+              </span>
+            </div>
+            <div class="error-message" id="password-error"></div>
           </div>
           <div class="form-group">
-            <input type="submit" class="btn btn-block btn-default" value="Login">
+            <button type="submit" class="btn btn-block btn-default" id="login-btn">
+              <span class="btn-text">Login</span>
+            </button>
           </div>
         </form>
       </div>
@@ -3686,33 +3697,78 @@ function authenticate() {
     $("#loading").children().length
   );
 
-  // Ensure it's visible with explicit styles
-  $("#loading").addClass("show");
-  $("#loading").css({
-    display: "flex",
-    "align-items": "center",
-    "justify-content": "center",
-    "flex-direction": "column",
+  // Use requestAnimationFrame to ensure DOM is ready
+  requestAnimationFrame(function () {
+    // Ensure it's visible with explicit styles using !important
+    const loadingEl = $("#loading")[0];
+    if (loadingEl) {
+      loadingEl.classList.add("show");
+      loadingEl.style.setProperty("display", "flex", "important");
+      loadingEl.style.setProperty("align-items", "center", "important");
+      loadingEl.style.setProperty("justify-content", "center", "important");
+      loadingEl.style.setProperty("flex-direction", "column", "important");
+      loadingEl.style.setProperty("height", "100vh", "important");
+      loadingEl.style.setProperty("width", "100vw", "important");
+      loadingEl.style.setProperty("position", "fixed", "important");
+      loadingEl.style.setProperty("top", "0", "important");
+      loadingEl.style.setProperty("left", "0", "important");
+      loadingEl.style.setProperty("right", "0", "important");
+      loadingEl.style.setProperty("bottom", "0", "important");
+      loadingEl.style.setProperty("z-index", "99999", "important");
+      loadingEl.style.setProperty("overflow", "hidden", "important");
+
+      // Ensure header and footer are visible
+      const headerEl = $(".login-header")[0];
+      const footerEl = $(".login-footer")[0];
+      if (headerEl) {
+        headerEl.style.setProperty("display", "block", "important");
+        headerEl.style.setProperty("background", "#17411c", "important");
+      }
+      if (footerEl) {
+        footerEl.style.setProperty("display", "block", "important");
+        footerEl.style.setProperty("background", "#17411c", "important");
+        footerEl.style.setProperty("color", "white", "important");
+      }
+
+      console.log(
+        "Loading display:",
+        window.getComputedStyle(loadingEl).display
+      );
+      console.log("Loading height:", window.getComputedStyle(loadingEl).height);
+      console.log("#load exists:", $("#load").length > 0);
+      console.log("Header exists:", $(".login-header").length > 0);
+      console.log("Footer exists:", $(".login-footer").length > 0);
+    }
   });
 
-  console.log("Loading display:", $("#loading").css("display"));
-  console.log("Loading visibility:", $("#loading").css("visibility"));
-  console.log("Loading height:", $("#loading").css("height"));
-  console.log("#load exists:", $("#load").length > 0);
-
-  // Force a reflow to ensure rendering
-  if ($("#loading")[0]) {
-    $("#loading")[0].offsetHeight;
-  }
-
-  // Focus on username field
+  // Focus on username field and add Enter key support
   setTimeout(function () {
     const usernameInput = $("#account input[name='username']");
+    const passwordInput = $("#account input[name='password']");
+
     if (usernameInput.length) {
       usernameInput.focus();
       console.log("Username field focused");
+
+      // Allow Enter key to move to password field
+      usernameInput.on("keypress", function (e) {
+        if (e.which === 13) {
+          e.preventDefault();
+          passwordInput.focus();
+        }
+      });
     } else {
       console.log("Username field not found!");
+    }
+
+    // Allow Enter key on password field to submit
+    if (passwordInput.length) {
+      passwordInput.on("keypress", function (e) {
+        if (e.which === 13) {
+          e.preventDefault();
+          $("#account").submit();
+        }
+      });
     }
   }, 200);
 }
@@ -3720,19 +3776,61 @@ function authenticate() {
 $("body").on("submit", "#account", function (e) {
   e.preventDefault();
   let formData = $(this).serializeObject();
+  const $form = $(this);
+  const $btn = $("#login-btn");
+  const $usernameInput = $form.find('input[name="username"]');
+  const $passwordInput = $form.find('input[name="password"]');
+  const $usernameError = $("#username-error");
+  const $passwordError = $("#password-error");
 
-  if (formData.username == "" || formData.password == "") {
-    Swal.fire("Incomplete form!", auth_empty, "warning");
-  } else {
-    $.ajax({
-      url: api + "users/login",
-      type: "POST",
-      data: JSON.stringify(formData),
-      contentType: "application/json; charset=utf-8",
-      cache: false,
-      processData: false,
-      success: function (data) {
-        if (data._id) {
+  // Clear previous errors
+  $usernameError.removeClass("show").text("");
+  $passwordError.removeClass("show").text("");
+  $usernameInput.css("border-color", "#e0e0e0");
+  $passwordInput.css("border-color", "#e0e0e0");
+
+  // Validate form
+  let hasError = false;
+  if (formData.username == "" || formData.username.trim() == "") {
+    $usernameError.addClass("show").text("Please enter your username");
+    $usernameInput.css("border-color", "#e74c3c");
+    hasError = true;
+  }
+  if (formData.password == "" || formData.password.trim() == "") {
+    $passwordError.addClass("show").text("Please enter your password");
+    $passwordInput.css("border-color", "#e74c3c");
+    hasError = true;
+  }
+
+  if (hasError) {
+    // Focus on first error field
+    if (formData.username == "" || formData.username.trim() == "") {
+      $usernameInput.focus();
+    } else {
+      $passwordInput.focus();
+    }
+    return;
+  }
+
+  // Disable button and show loading state
+  $btn.prop("disabled", true).addClass("loading");
+  $usernameInput.prop("disabled", true);
+  $passwordInput.prop("disabled", true);
+
+  $.ajax({
+    url: api + "users/login",
+    type: "POST",
+    data: JSON.stringify(formData),
+    contentType: "application/json; charset=utf-8",
+    cache: false,
+    processData: false,
+    success: function (data) {
+      if (data._id) {
+        // Success - show success message briefly before reload
+        $btn
+          .removeClass("loading")
+          .html('<span class="btn-text">✓ Success</span>');
+        setTimeout(function () {
           storage.set("auth", {
             auth: true,
             role: data.role || "user",
@@ -3743,15 +3841,40 @@ $("body").on("submit", "#account", function (e) {
           $(".main_app").show();
           $("footer.login-footer").show();
           ipcRenderer.send("app-reload", "");
-        } else {
-          Swal.fire("Oops!", auth_error, "warning");
-        }
-      },
-      error: function (data) {
-        console.log(data);
-      },
-    });
-  }
+        }, 500);
+      } else {
+        // Login failed
+        $btn.prop("disabled", false).removeClass("loading");
+        $usernameInput.prop("disabled", false);
+        $passwordInput.prop("disabled", false);
+        $passwordInput.css("border-color", "#e74c3c");
+        $passwordError.addClass("show").text(auth_error);
+        $passwordInput.focus().select();
+        Swal.fire("Oops!", auth_error, "warning");
+      }
+    },
+    error: function (xhr, status, error) {
+      // Re-enable form
+      $btn.prop("disabled", false).removeClass("loading");
+      $usernameInput.prop("disabled", false);
+      $passwordInput.prop("disabled", false);
+
+      // Show error message
+      let errorMsg = auth_error;
+      if (xhr.status === 401 || xhr.status === 403) {
+        errorMsg = auth_error;
+      } else if (xhr.status === 0) {
+        errorMsg = "Unable to connect to server. Please check your connection.";
+      } else {
+        errorMsg = "An error occurred. Please try again.";
+      }
+
+      $passwordInput.css("border-color", "#e74c3c");
+      $passwordError.addClass("show").text(errorMsg);
+      $passwordInput.focus().select();
+      Swal.fire("Error!", errorMsg, "error");
+    },
+  });
 });
 
 $("#quit").click(function () {
